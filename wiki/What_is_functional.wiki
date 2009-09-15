@@ -13,11 +13,11 @@ It's in French at the moment but will be shortly (I hope) translated.
 
   * - Un sprite de héros au centre de l'écran
   * - Une map qui scroll autour (avec 2 niveau : Background & Foreground)
-# - Une gestion des tuile passables ou non (à affiner).
-# - Un mob (monstre) pas si mobile que ça.
-# - Le status du héros et du mob qui "flotte" au dessus de lui ("OK" par défaut).
-# - Un arme (press A) qui ne fait pas grand chose (elle se déplace)
-# - Un système de collision (le status passe à "HIT" quand l'objet est touché)
-# - On peut "contrôler le mob avec le bouton A.
-# - On déclenche le sort avec le bouton L.
-# - Implémentation de menus pas tout à fait fonctionnels mais presque.
+  * - Une gestion des tuile passables ou non (à affiner).
+  * - Un mob (monstre) pas si mobile que ça.
+  * - Le status du héros et du mob qui "flotte" au dessus de lui ("OK" par défaut).
+  * - Un arme (press A) qui ne fait pas grand chose (elle se déplace)
+  * - Un système de collision (le status passe à "HIT" quand l'objet est touché)
+  * - On peut "contrôler le mob avec le bouton A.
+  * - On déclenche le sort avec le bouton L.
+  * - Implémentation de menus pas tout à fait fonctionnels mais presque.
