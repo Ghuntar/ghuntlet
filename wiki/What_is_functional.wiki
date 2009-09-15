@@ -11,8 +11,8 @@ It's in French at the moment but will be shortly (I hope) translated.
 = Details =
 
 
-## - Un sprite de héros au centre de l'écran
-# - Une map qui scroll autour (avec 2 niveau : Background & Foreground)
+  * - Un sprite de héros au centre de l'écran
+  * - Une map qui scroll autour (avec 2 niveau : Background & Foreground)
 # - Une gestion des tuile passables ou non (à affiner).
 # - Un mob (monstre) pas si mobile que ça.
 # - Le status du héros et du mob qui "flotte" au dessus de lui ("OK" par défaut).
