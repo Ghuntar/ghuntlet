@@ -1,9 +1,11 @@
-#summary One-sentence summary of this page.
+#summary This page discribe what is already in function.
 #labels Phase-Requirements
 
 = Introduction =
 
-What is functional
+This page discribe what is already in function.
+
+It's in French at the moment but will be shortly (I hope) translated.
 
 
 = Details =
