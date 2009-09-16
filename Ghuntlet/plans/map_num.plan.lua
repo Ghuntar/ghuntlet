@@ -20,10 +20,10 @@ smap.FG_tileset = Image.load("./images/Ghuntlet_dungeon.png", VRAM)
 -- Init (Scroll)Map
 smap.BG_smap = ScrollMap.new(smap.BG_Tileset, smap.BG_map, map_width, map_height, tile_width, tile_height)
 smap.FG_smap = ScrollMap.new(smap.BG_Tileset, smap.FG_map, map_width, map_height, tile_width, tile_height)
-smap.BG_blocking_tiles = {129 , 139}
+smap.BG_blocking_tiles = {16, 129 , 139}
 
-hero.realpos = {8 , 8}
-mob.realpos = {16 , 16}
+hero_startpos = {16 , 16}
+mob_startpos = {48 , 48}
 maxrealx = map_width * tile_width
 maxrealy = map_height * tile_height
 

@@ -22,8 +22,8 @@ smap.BG_smap = ScrollMap.new(smap.BG_Tileset, smap.BG_map, map_width, map_height
 smap.FG_smap = ScrollMap.new(smap.BG_Tileset, smap.FG_map, map_width, map_height, tile_width, tile_height)
 smap.BG_blocking_tiles = {129 , 139}
 
-hero.realpos = {120 , 120}
-mob.realpos = {168 , 168}
+hero_startpos = {120 , 120}
+mob_startpos = {168 , 168}
 maxrealx = map_width * tile_width
 maxrealy = map_height * tile_height
 
