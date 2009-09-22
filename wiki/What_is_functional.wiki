@@ -15,8 +15,8 @@ It's in French at the moment but will be shortly (I hope) translated.
   * Une map qui scroll autour (avec 2 niveau : Background & Foreground)
   * Une gestion des tuile passables ou non (à affiner).
   * Gestion des monstres :
-    * Constructeur de monstre
-    * IA rudimentaire
+   * Constructeur de monstre
+   * IA rudimentaire
   * Le status du héros et du mob (plus pour les mobs dans la alpha 6, mais ça va revenir) qui "flotte" au dessus de lui ("OK" par défaut).
   * Un arme (press A) qui ne fait pas grand chose (elle se déplace et fait baisser la vie des mobs)
   * Un système de collision (le status passe à "HIT" quand l'objet est touché et perte de points de vie)
