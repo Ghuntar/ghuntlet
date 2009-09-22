@@ -1,50 +1,35 @@
 -- Ghuntlet
 -- a Gauntlet pseudo clone by Ghuntar WALDMEISTER.
 
+--Add more path to run modules
+package.path = package.path.."/lua/scripts/Ghuntlet/lib/?.lua;"
+package.path = package.path.."/media/DATAZ/LUA/Ghuntlet/lib/?.lua;"
+
+--Load libraries
+--heroz = require "libheroz"
+--wpnz = require "libweaponz"
+--mobz = require "libmobz"
+--coordz = require "libcoordz"
+--screenz = require "libscreenz"
+
 game = {}
--- Différents game.status : select_game, select_plan, ingame, gameover, pause , exit
+-- Différents game.status : select_game, select_plan, ingame, pause , gameover, exit
+STATUS = {"select_game", "select_plan", "ingame", "pause" , "gameover", "exit"}
 game.status = "select_game"
 
 dofile ("selection_screens.lua")
 dofile ("ingame.lua")
+dofile ("mobz.lua")
+dofile ("coordz.lua")
+dofile ("display_ds.lua")
+dofile ("controls_ds.lua")
 
---game.curentmap = "./plans/map_num.plan.lua"
---dofile (game.curentmap)
 
--- Taille de l'écran
-Scr_width  = 256
-Scr_height = 192
--- Avec 16px par tuile, on affiche 16*12 tuiles
+--####################################
+--# Déclaration des fonctions START #
+--##################################
 
--- Déclaration des fonctions START
-
--- Cette fonction retourne les coordonnées d'affichage d'un objet à partir de ses "vrai" coordonnées
-function displaycoords (any_coord)
-	local any_scr_x = any_coord[1] + hero.scrpos[1] - hero.realpos[1]
-	local any_scr_y = any_coord[2] + hero.scrpos[2] - hero.realpos[2]
-	return {any_scr_x , any_scr_y}
-	end
-
--- Cette fonction retourne la coordonnée x de la tuile courante
---function WhichtileX (x)
---	local currenttilex = math.floor ((x + sprite_width / 2) / tile_width)
---	return currenttilex
---	end
-
--- Cette fonction retourne la coordonnée y de la tuile courante
---function WhichtileY (y)
---	local currenttiley = math.floor ((y + sprite_heigth /2)/ tile_height)
---	return currenttiley
---	end
-
--- Cette fonction retourne la tuile (son numero) qui se trouve aux coordonnées de la map indiquée
-	function Whichtile (any_coord,smap)
-	local currenttilex = math.floor (any_coord[1] / tile_width)
-	local currenttiley = math.floor (any_coord[2] / tile_height)
-	return ScrollMap.getTile(smap, currenttilex, currenttiley)
-	end
-
--- Cette fonction vérifie si un nombre se trouve dans un tableau
+-- Cette fonction vérifie si un nombre (n) se trouve dans une table (t)
 function in_table( t , n )
 	local i
 	i = 1
@@ -57,62 +42,17 @@ function in_table( t , n )
 	return false
 end
 
--- Cette fonction contrôle la croix de direction et renvoie la direction
-function get_dir ()
---6|1|5
---2|0|4
---7|3|8
-	local direction = 0
-	Controls.read()
-		if Keys.held.Up and Keys.held.Right then direction = 5
-		elseif Keys.held.Up and Keys.held.Left then direction = 6
-		elseif Keys.held.Down and Keys.held.Left then direction = 7
-		elseif Keys.held.Down and Keys.held.Right then direction = 8
-		elseif Keys.held.Up then direction = 1
-		elseif Keys.held.Left then direction = 2
-		elseif Keys.held.Down then direction = 3
-		elseif Keys.held.Right then direction = 4
-		end
-	return direction
+--##########################################################
+
+-- Cette fonction vérifie si une valeur (value) se trouve dans une table (array)
+function is_in_table (array , value)
+	for k, v in pairs (array) do
+		if value == v then return true end
 	end
-
--- Cette fonction calcule des coordonnées de mouvement à partir de la direction et la vitesse d'un objet.
-function compute_move (object)
-		local move = {}
-		move = {0 , 0}
-		if object.dir == 1 then move = {0 , -object.speed} end
-		if object.dir == 2 then move = {-object.speed , 0} end
-		if object.dir == 3 then move = {0 , object.speed} end
-		if object.dir == 4 then move = {object.speed , 0} end
-		if object.dir == 5 then move = {object.speed * 0.8, -object.speed*0.8} end
-		if object.dir == 6 then move = {-object.speed * 0.8 , -object.speed * 0.8} end
-		if object.dir == 7 then move = {-object.speed * 0.8 , object.speed * 0.8} end
-		if object.dir == 8 then move = {object.speed * 0.8 , object.speed * 0.8} end
-		--if object.dir == 0 then move = {0 , 0}
-		return move
-		end
-
--- Cette fonction calcule les nouvelles coordonnés d'un objet
-function compute_new_coords (object , incr)
-	local tobject = {}
-	tobject.realpos = {}
-	tobject.realpos[1] = object.realpos[1]
-	tobject.realpos[2] = object.realpos[2]
-	tobject.realpos[1] = tobject.realpos[1] + incr[1]
-	tobject.realpos[2] = tobject.realpos[2] + incr[2]
-	return tobject.realpos
-	end
-
-
-function collide (obj1,obj2)
-	if (obj1.realpos[1] + (sprite_width /2)) > (obj2.realpos[1] - (sprite_width /2))
-	and (obj1.realpos[1] - (sprite_width /2)) < (obj2.realpos[1] + (sprite_width /2))
-	and (obj1.realpos[2] + (sprite_height /2)) > (obj2.realpos[2] - (sprite_height /2))
-	and (obj1.realpos[2] - (sprite_height /2)) < (obj2.realpos[2] + (sprite_height /2))
-	then return true
-	else return false
-	end
+	return false
 end
+
+--##########################################################
 
 function changelifestatus (obj)
 	local status = "OK"
@@ -122,7 +62,9 @@ function changelifestatus (obj)
 	return status
 	end
 
--- Déclaration des fonctions END
+--####################################
+--# Déclaration des fonctions STOP #
+--##################################
 
 
 --##########################################################
@@ -133,11 +75,12 @@ function changelifestatus (obj)
 --Debut de la grande Boucle
 while (game.status ~= "exit") do
 
+--Controls.read()
 if game.status == "select_game" then select_game () end
 if game.status == "select_plan" then select_plan () end
 if game.status == "ingame" then ingame() end
 if game.status == "gameover" then gameover () end
-
+if not in_table (STATUS, game.status) then game.status = "exit" end
 end
 
 --Vidage mémoire
