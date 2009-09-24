@@ -4,6 +4,7 @@
 
 Monster = {}
 Monster_mt = {}
+Monster_mt.__index = Monster
 
 function Monster.new (...)
 	return setmetatable ({
@@ -12,7 +13,7 @@ function Monster.new (...)
 					}, Monster_mt)
 end
 
-function Monster:init(self)
+function Monster:init()
 	self.race = "Unknown"
 	self.speed = 1
 	self.maxlife = 5
@@ -32,6 +33,13 @@ function Monster:init(self)
 		self.width = 16
 		self.height = 16
 	end
+	if self.name == "BlackMage" then
+		self.race = "Human"
+		self.speed = 1
+		self.maxlife = 10
+		self.width = 16
+		self.height = 16
+	end
 	self.realpos = {unpack(self.startpos)}
 	self.lastpos = {0,0}
 	self.scrpos = {0,0}
@@ -41,7 +49,7 @@ function Monster:init(self)
 	self.status = "OK"
 end
 
-function Monster:ia_mov (self)
+function Monster:ia_mov ()
 	local newdir = 0
 	if self.realpos[1] < hero.realpos[1] and self.realpos[2] < hero.realpos[2] then newdir = 8 end
 	if self.realpos[1] > hero.realpos[1] and self.realpos[2] < hero.realpos[2] then newdir = 7 end
@@ -57,7 +65,7 @@ end
 --6|1|5
 --2|0|4
 --7|3|8
-
+--[[
 function ia_mov (mob)
 local newdir = 0
 if mob.realpos[1] < hero.realpos[1] and mob.realpos[2] < hero.realpos[2] then newdir = 8 end
@@ -66,4 +74,4 @@ if mob.realpos[1] < hero.realpos[1] and mob.realpos[2] > hero.realpos[2] then ne
 if mob.realpos[1] > hero.realpos[1] and mob.realpos[2] > hero.realpos[2] then newdir = 6 end
 return newdir
 end
-
+]]--

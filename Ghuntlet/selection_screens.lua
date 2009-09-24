@@ -1,4 +1,4 @@
--- selectin_screens.lua
+-- selection_screens.lua
 
 function select_in_list (...)
 	local select_list = arg[1] or {{"Missing Selection","Missed"}}
@@ -32,13 +32,13 @@ end
 --##############################################
 
 function justify (string_length)
-return ((Scr_width - string_length*8)/2)
+return ((Scr_width - string_length*6)/2)
 end
 
 --##############################################
 
 function select_game ()
-game.status = select_in_list ({{"New Game","select_plan"},{"Continue [not implemented]","crash"},{"Exit","exit"}} , "Welcome to Ghuntlet")
+game.status = select_in_list ({{"New Game","choose_hero"},{"Continue [not implemented]","crash"},{"Exit","exit"}} , "Welcome to Ghuntlet")
 end
 
 --##############################################
@@ -66,6 +66,13 @@ end
 
 function pause ()
 game.status = select_in_list ({{"Continue","ingame"},{"Select Game","select_game"},{"Select Map","select_plan"},{"Exit","gameover"}} , "Pause, Press Start to select")
+end
+
+--##############################################
+
+function choose_hero ()
+game.hero = select_in_list ({{"Black Mage","BlackMage"},{"Valkyrie","Valkyrie"},{"Maiden Guard","MaidenGuard"},{"White Mage","WhiteMage"}} , "Choose your Character")
+game.status = "select_plan"
 end
 
 --##############################################

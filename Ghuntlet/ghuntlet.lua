@@ -16,14 +16,15 @@ game = {}
 -- Différents game.status : select_game, select_plan, ingame, pause , gameover, exit
 STATUS = {"select_game", "select_plan", "ingame", "pause" , "gameover", "exit"}
 game.status = "select_game"
+game.level = 0
 
 dofile ("selection_screens.lua")
 dofile ("ingame.lua")
+dofile ("heroz.lua")
 dofile ("mobz.lua")
 dofile ("coordz.lua")
 dofile ("display_ds.lua")
 dofile ("controls_ds.lua")
-
 
 --####################################
 --# Déclaration des fonctions START #
@@ -77,6 +78,7 @@ while (game.status ~= "exit") do
 
 --Controls.read()
 if game.status == "select_game" then select_game () end
+if game.status == "choose_hero" then choose_hero () end
 if game.status == "select_plan" then select_plan () end
 if game.status == "ingame" then ingame() end
 if game.status == "gameover" then gameover () end
