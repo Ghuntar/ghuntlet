@@ -58,21 +58,7 @@ function compute_new_coords (object , incr)
 
 --##############################################
 
---[[
 function collide (obj1,obj2)
-	if (obj1.realpos[1] + (sprite_width /2)) > (obj2.realpos[1] - (sprite_width /2))
-	and (obj1.realpos[1] - (sprite_width /2)) < (obj2.realpos[1] + (sprite_width /2))
-	and (obj1.realpos[2] + (sprite_height /2)) > (obj2.realpos[2] - (sprite_height /2))
-	and (obj1.realpos[2] - (sprite_height /2)) < (obj2.realpos[2] + (sprite_height /2))
-	then return true
-	else return false
-	end
-end
-]]--
-
---##############################################
-
-function collide2 (obj1,obj2)
 -- obj1 & obj2 are lists wich contains a .width, .height, .realpos[1](x) and realpos[2](y)
 	local width1 = obj1.width /2
 	local width2 = obj2.width /2
