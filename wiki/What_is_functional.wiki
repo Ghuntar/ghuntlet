@@ -5,14 +5,15 @@
 
 This page discribe what is already in function.
 
-  1. A hero sprite at the center of the screen
-  2. A map which scrolls around (with two levels, Background + Foreground)
-  3. A passable tile management or not 4. Monster Management:
-   4a. Constructing Monsters 4b. Rudimentary AI 
-  5. The status of hero and mobs (more for the mobs in alpha 6, but it will return) which "floats" below him ("OK" by default)
-  6. A weapon (press A) which doesn't do anything important (it moves and lowers the mobs' health)
-  7. A collision system (the status turns to "HIT" when the object is touched and loses HP)
-  8. You use spells with L 9. Implementation of menus.
+  # A hero sprite at the center of the screen
+  # A map which scrolls around (with two levels, Background + Foreground)
+  # A passable tile management or not 
+  # Monster Management:
+   # Constructing Monsters 4b. Rudimentary AI 
+  # The status of hero and mobs (more for the mobs in alpha 6, but it will return) which "floats" below him ("OK" by default)
+  # A weapon (press A) which doesn't do anything important (it moves and lowers the mobs' health)
+  # A collision system (the status turns to "HIT" when the object is touched and loses HP)
+  # You use spells with L 9. Implementation of menus.
 
 
 ########################################################
