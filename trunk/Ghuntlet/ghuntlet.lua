@@ -18,13 +18,15 @@ STATUS = {"select_game", "select_plan", "ingame", "pause" , "gameover", "exit"}
 game.status = "select_game"
 game.level = 0
 
-dofile ("selection_screens.lua")
-dofile ("ingame.lua")
-dofile ("heroz.lua")
-dofile ("mobz.lua")
-dofile ("coordz.lua")
-dofile ("display_ds.lua")
-dofile ("controls_ds.lua")
+dofile ("selection_screens_lib.lua")
+dofile ("ingame_lib.lua")
+dofile ("heroz_lib.lua")
+dofile ("skillz_lib.lua")
+dofile ("mobz_lib.lua")
+dofile ("itemz_lib.lua")
+dofile ("coordz_lib.lua")
+dofile ("display_ds_lib.lua")
+dofile ("controls_ds_lib.lua")
 
 --####################################
 --# Déclaration des fonctions START #
