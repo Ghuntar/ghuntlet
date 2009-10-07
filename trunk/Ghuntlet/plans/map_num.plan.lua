@@ -21,9 +21,12 @@ smap.FG_tileset = Image.load("./images/Ghuntlet_dungeon.png", VRAM)
 smap.BG_smap = ScrollMap.new(smap.BG_Tileset, smap.BG_map, map_width, map_height, tile_width, tile_height)
 smap.FG_smap = ScrollMap.new(smap.BG_Tileset, smap.FG_map, map_width, map_height, tile_width, tile_height)
 smap.BG_blocking_tiles = {16, 129 , 139}
+smap.doors = {143}
 
 hero_startpos = {16 , 16}
 maxrealx = map_width * tile_width
 maxrealy = map_height * tile_height
 smap.monster_list = {}
-smap.item_list = {}
+smap.item_list =	{
+					{"key",{16,40}},
+					}

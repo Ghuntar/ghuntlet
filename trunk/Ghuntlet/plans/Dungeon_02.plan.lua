@@ -10,8 +10,8 @@ map_height = 50
 
 -- Fichier Map
 smap = {}
-smap.BG_map = "./maps/Dungeon_03_BG.map"
-smap.FG_map = "./maps/Dungeon_03_FG.map"
+smap.BG_map = "./maps/Dungeon_02_BG.map"
+smap.FG_map = "./maps/Dungeon_02_FG.map"
 
 -- Fichier Tileset
 smap.BG_Tileset = Image.load("./images/Ghuntlet_dungeon.png", VRAM)
@@ -20,7 +20,7 @@ smap.BG_Tileset = Image.load("./images/Ghuntlet_dungeon.png", VRAM)
 -- Init (Scroll)Map
 smap.BG_smap = ScrollMap.new(smap.BG_Tileset, smap.BG_map, map_width, map_height, tile_width, tile_height)
 smap.FG_smap = ScrollMap.new(smap.BG_Tileset, smap.FG_map, map_width, map_height, tile_width, tile_height)
-smap.BG_blocking_tiles = {129,139,54,55,56,57,63,80,81,82,85,0,1,2,5,16,32,21,37,143}
+smap.BG_blocking_tiles = {129,139,54,55,56,57,63,80,81,82,85,0,1,2,5,16,32,21,37,143,78,94,95,110,126}
 smap.doors = {143}
 smap.default_tile = 17
 
@@ -29,6 +29,7 @@ maxrealx = map_width * tile_width
 maxrealy = map_height * tile_height
 
 smap.monster_list = {
+					{"Portal",{200 , 200}},
 --[[					{"Ratmut",{200 , 200}},
 					{"BlackMage",{220 , 280}},
 					{"Skeleton",{250,250}},

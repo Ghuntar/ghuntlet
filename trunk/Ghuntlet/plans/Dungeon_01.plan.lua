@@ -20,7 +20,9 @@ smap.BG_Tileset = Image.load("./images/Ghuntlet_dungeon.png", VRAM)
 -- Init (Scroll)Map
 smap.BG_smap = ScrollMap.new(smap.BG_Tileset, smap.BG_map, map_width, map_height, tile_width, tile_height)
 smap.FG_smap = ScrollMap.new(smap.BG_Tileset, smap.FG_map, map_width, map_height, tile_width, tile_height)
-smap.BG_blocking_tiles = {129,139,54,55,56,57,63}
+smap.BG_blocking_tiles = {129,139,54,55,56,57,63,143}
+smap.doors = {143}
+smap.default_tile = 132
 
 hero_startpos = {120 , 120}
 -- mob_startpos = {200 , 200}
@@ -28,17 +30,15 @@ maxrealx = map_width * tile_width
 maxrealy = map_height * tile_height
 
 smap.monster_list = {
-					{"Ratmut",{200 , 200}},
 					{"BlackMage",{220 , 280}},
 					{"Skeleton",{250,250}},
-					{"Ratmut",{210 , 280}},
 					{"BlackMage",{210 , 310}},
 					{"Skeleton",{240,240}},
 					{"Scarab",{270,140}},
 					}
 smap.item_list =	{
 					{"deadbody",{170,150}},
-					{"deadbody",{150,170}},
+					{"key",{150,170}},
 					{"doubleaxe",{250,200}},
 					{"doubleaxe",{200,250}},
 					}
