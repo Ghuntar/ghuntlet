@@ -29,8 +29,6 @@ function Attack:init()
 end
 
 
-
-
 Spell = {}
 Spell_mt = {}
 Spell_mt.__index = Spell
@@ -42,6 +40,17 @@ function Spell.new (...)
 end
 
 
+function Spell:init(mob)
+	--print (moblist, mob.name, self.name, mob.realpos, mob.realpos[1],mob.realpos[2])
+	if self.name == "Summon" then
+		self.realpos = unpack (mob.realpos)
+		--print (self.name, self.realpos, self.realpos[1],self.realpos[2])
+		if #moblist < 10 then
+			table.insert (moblist, Monster.new ("Skeleton", mob.realpos))
+								moblist[#moblist]:init()
+								moblist[#moblist]:init_sprite()
+		end
 
+	end
 
-
+end
