@@ -63,3 +63,10 @@ function Heros:init()
 	self.attack:init()
 	self.inventory = {}
 end
+
+function Heros:tile_coord()
+local current_tile = {}
+current_tile[1] = math.floor (self.realpos[1] / tile_width)
+current_tile[2] = math.floor (self.realpos[2] / tile_height)
+return current_tile
+end

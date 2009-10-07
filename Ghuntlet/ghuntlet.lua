@@ -88,6 +88,11 @@ if not in_table (STATUS, game.status) then game.status = "exit" end
 end
 
 --Vidage mémoire
+
+--Image.destroy(inventory_background)
+inventory_background = nil
+
+
 Scr_width  = nil
 Scr_height = nil
 tile_width  = nil
@@ -96,23 +101,14 @@ map_width = nil
 map_height = nil
 ficmap = nil
 
-sprite_width  = nil
-sprite_height = nil
---half_sprite_width = nil
---half_sprite_height = nil
-
-wpn_sprite_width = nil
-wpn_sprite_height = nil
-
-mob_sprite_width = nil
-mob_sprite_height = nil
-spr3_dir = nil
-
-dir_move = nil
-
 hero = nil
-wpn = nil
-mob = nil
 
+game = nil
+
+--[[
+print (collectgarbage(count))
+collectgarbage(collect)
+print (collectgarbage(count))
+]]--
 --Clock = nil
 

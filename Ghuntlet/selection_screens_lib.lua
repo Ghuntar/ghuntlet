@@ -1,6 +1,7 @@
 -- selection_screens.lua
 
 function select_in_list (...)
+
 	local select_list = arg[1] or {{"Missing Selection","Missed"}}
 	local selection_size = #select_list
 	local title = arg[2] or "Missing Title"
@@ -15,11 +16,11 @@ function select_in_list (...)
 		if selection > selection_size then selection = 1 end
 		if selection < 1 then selection = selection_size end
 --DEBUG DISPLAY START
-		screen.print(SCREEN_UP, 0, 24,"Game status : "..game.status)
-		screen.print(SCREEN_UP, 0, 32, "Selection :"..selection.."/"..selection_size)
-		screen.print(SCREEN_UP, 0, 40, "Display : "..select_list[selection][1])
-		screen.print(SCREEN_UP, 0, 48, "True value : "..select_list[selection][2])
-		screen.print(SCREEN_DOWN, 0, 0, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+		--screen.print(SCREEN_DOWN, 0, 24,"Game status : "..game.status)
+		--screen.print(SCREEN_DOWN, 0, 32, "Selection :"..selection.."/"..selection_size)
+		--screen.print(SCREEN_DOWN, 0, 40, "Display : "..select_list[selection][1])
+		--screen.print(SCREEN_DOWN, 0, 48, "True value : "..select_list[selection][2])
+		--screen.print(SCREEN_DOWN, 0, 0, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 --DEBUG DISPLAY STOP
 		screen.print(SCREEN_DOWN, tab , 10 , title)
 		for i = 1, selection_size do
@@ -52,7 +53,7 @@ end
 function select_plan ()
 game.curentmap = select_in_list (	{
 									{"Dungeon 1","./plans/Dungeon_01.plan.lua"},
-									{"Dungeon 2","./plans/map_num.plan.lua"},
+									{"Dungeon 2","./plans/Dungeon_02.plan.lua"},
 									{"Dungeon 3","./plans/Dungeon_03.plan.lua"},
 									{"Exit", "exit"}
 									},"Select Your Dungeon")
@@ -65,7 +66,7 @@ end
 function gameover ()
 	while (not Keys.newPress.Start) do
 		Controls.read()
-		screen.print(SCREEN_UP, 0, 32,"Game status : "..game.status)
+		--screen.print(SCREEN_DOWN, 0, 32,"Game status : "..game.status)
 		screen.print(SCREEN_DOWN, 100, 40,"Game Over")
 		screen.print(SCREEN_DOWN, 75, 80,"Press Start to reset")
 		render()
