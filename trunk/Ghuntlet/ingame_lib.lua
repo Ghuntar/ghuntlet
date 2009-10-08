@@ -214,6 +214,8 @@ for k, v in ipairs (moblist) do v.sprite = nil v = nil end
 for k, v in ipairs (itemlist) do v.sprite = nil v = nil end
 ScrollMap.destroy(smap.BG_smap)
 ScrollMap.destroy(smap.FG_smap)
+smap.BG_Tileset = nil
+smap.FG_Tileset = nil
 smap = nil
 --Image.destroy(inventory_background)
 --inventory_background = nil

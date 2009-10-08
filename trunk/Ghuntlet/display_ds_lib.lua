@@ -1,8 +1,8 @@
 --display_ds.lua
 
 -- Taille de l'écran
-Scr_width  = 256
-Scr_height = 192
+--Scr_width  = 256
+--Scr_height = 192
 -- Avec 16px par tuile, on affiche 16*12 tuiles
 
 

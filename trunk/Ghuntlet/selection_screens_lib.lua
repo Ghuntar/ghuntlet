@@ -35,7 +35,7 @@ end
 --##############################################
 
 function justify (string_length)
-return ((Scr_width - string_length*6)/2)
+return ((SCREEN_WIDTH - string_length*6)/2)
 end
 
 --##############################################
