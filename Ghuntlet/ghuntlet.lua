@@ -93,8 +93,8 @@ end
 inventory_background = nil
 
 
-Scr_width  = nil
-Scr_height = nil
+--Scr_width  = nil
+--Scr_height = nil
 tile_width  = nil
 tile_height = nil
 map_width = nil
