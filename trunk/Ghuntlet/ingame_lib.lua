@@ -15,6 +15,7 @@ local itemlist = {}
 
 -- Définition du héros
 hero = Heros.new (game.hero, hero_startpos)
+hero_startpos = nil
 hero:init () -- Définition du héros et de son arme
 hero:init_sprite()
 
@@ -22,12 +23,14 @@ hero:init_sprite()
 for k,v in ipairs (smap.monster_list) do
 moblist[k] = Monster.new (v[1],v[2])
 end
+smap.monster_list = nil
 for k,v in ipairs (moblist) do v:init() v:init_sprite()end
 
 -- Définition des objets
 for k,v in ipairs (smap.item_list) do
 itemlist[k] = Item.new (v[1],v[2])
 end
+smap.item_list = nil
 for k,v in ipairs (itemlist) do v:init() v:init_sprite()end
 
 -- MAIN while
@@ -206,17 +209,31 @@ else screen.print (SCREEN_UP, justify (30) , 8 , "Level completed : PRESS START"
 
 
 end --end of MAIN while
+
+-- Destruction du Heros
 hero.sprite = nil
 hero.attack.sprite = nil
+-- Destruction des mobz
 for k, v in ipairs (hero.inventory) do v.sprite = nil v=nil end
 hero = nil
 for k, v in ipairs (moblist) do v.sprite = nil v = nil end
+-- Destruction des Objets
 for k, v in ipairs (itemlist) do v.sprite = nil v = nil end
+-- Destruction des parametres de la map
+tile_width  = nil
+tile_height = nil
+map_width = nil
+map_height = nil
+maxrealx = nil
+maxrealy = nil
 ScrollMap.destroy(smap.BG_smap)
 ScrollMap.destroy(smap.FG_smap)
+if smap.BG_Tileset then Image.destroy(smap.BG_Tileset) end
 smap.BG_Tileset = nil
+if smap.FG_Tileset then Image.destroy(smap.FG_Tileset) end
 smap.FG_Tileset = nil
 smap = nil
+
 --Image.destroy(inventory_background)
 --inventory_background = nil
 end --end of function
