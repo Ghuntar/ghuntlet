@@ -2,6 +2,29 @@
 
 
 --####################################
+--#              MOBz               #
+--##################################
+-- MOBz are all Mobile OBjects, including Heroes, Monsters, Weapons, and more
+
+MOB = {}
+function MOB:new(...)
+	local newobject = {}
+	newobject.name = arg[1] or "Unnamed"
+	newobject.startpos = {unpack (arg[2])} or {0 , 0}
+	setmetatable(newobject, self)
+	return newobject
+end
+
+function MOB:init(...)
+
+end
+
+function MOB:copy(copied)
+local newcopy = {}
+return newcopy
+end
+
+--####################################
 --#				Monster				#
 --##################################
 
