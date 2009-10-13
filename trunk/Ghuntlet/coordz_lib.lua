@@ -95,13 +95,22 @@ end
 
 
 --####################################
---#				Doors				#
+--#             Doors               #
 --##################################
 
-function event_door(obj)
+function event_door (obj)
 --local current_tile = Whichtile (obj.realpos, smap.BG_smap)
 local current_tile_coord = hero:tile_coord()
 	for k,v in ipairs (obj.inventory) do
 		if v.name == "key" then ScrollMap.setTile(smap.BG_smap, current_tile_coord[1], current_tile_coord[2], smap.default_tile) table.remove (hero.inventory, k) end
 	end
+end
+
+
+--####################################
+--#             Stairs              #
+--##################################
+
+function event_stairs ()
+
 end
