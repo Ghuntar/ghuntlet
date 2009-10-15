@@ -84,6 +84,7 @@ end
 	if hero.realpos[2] < 0 then hero.realpos[2] = 0 end
 	if hero.realpos[2] > max_y then hero.realpos[2] = max_y end
 	if in_table (smap.doors , Whichtile (hero.realpos, smap.BG_smap)) then event_door (hero) end
+	if in_table (smap.stairs , Whichtile (hero.realpos, smap.BG_smap)) then event_stairs (hero) end
 	--if in_table (smap.BG_blocking_tiles , Whichtile (hero.realpos, smap.BG_smap)) then hero.realpos = {unpack(hero.lastpos)} end
 	if in_table (smap.BG_blocking_tiles , Whichtile (hero.realpos, smap.BG_smap)) then hero.realpos = skirt (hero) end
 

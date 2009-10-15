@@ -51,12 +51,19 @@ end
 --##############################################
 
 function select_plan ()
-game.curentmap = select_in_list (	{
-									{"Dungeon 1","./plans/Dungeon_01.plan.lua"},
-									{"Dungeon 2","./plans/Dungeon_02.plan.lua"},
-									{"Dungeon 3","./plans/Dungeon_03.plan.lua"},
-									{"Exit", "exit"}
-									},"Select Your Dungeon")
+if game.level == 0 then
+	game.curentmap = select_in_list (	{
+										{"Dungeon 1","./plans/Dungeon_01.plan.lua"},
+										{"Dungeon 2","./plans/Dungeon_02.plan.lua"},
+										{"Dungeon 3","./plans/Dungeon_03.plan.lua"},
+										{"Exit", "exit"}
+										},"Select Your Dungeon"
+									)
+end
+if game.level == 1 then game.curentmap = "./plans/Dungeon_01.plan.lua" end
+if game.level == 2 then game.curentmap = "./plans/Dungeon_02.plan.lua" end
+if game.level == 3 then game.curentmap = "./plans/Dungeon_03.plan.lua" end
+if game.level > 3 then game.curentmap = nil end
 if ((game.curentmap) and (game.curentmap ~= "exit")) then dofile (game.curentmap) game.status = "ingame"
 else game.status = "select_game" end
 end

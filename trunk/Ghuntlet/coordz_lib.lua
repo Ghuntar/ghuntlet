@@ -112,5 +112,6 @@ end
 --##################################
 
 function event_stairs ()
-
+ game.level = game.level + 1
+ game.status = "select_plan"
 end
