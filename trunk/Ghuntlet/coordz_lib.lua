@@ -111,7 +111,8 @@ end
 --#             Stairs              #
 --##################################
 
-function event_stairs ()
- game.level = game.level + 1
+function event_stairs (...)
+ local inc = arg[1] or 1
+ game.level = game.level + inc
  game.status = "select_plan"
 end
