@@ -29,7 +29,7 @@ function select_in_list (...)
 		screen.print(SCREEN_DOWN, 30 ,20+selection*espacement, "=>")
 		render()
 	end
-return select_list[selection][2]
+return select_list[selection][2],selection
 end
 
 --##############################################
@@ -52,7 +52,7 @@ end
 
 function select_plan ()
 if game.level == 0 then
-	game.curentmap = select_in_list (	{
+	game.curentmap , game.level = select_in_list (	{
 										{"Dungeon 1","./plans/Dungeon_01.plan.lua"},
 										{"Dungeon 2","./plans/Dungeon_02.plan.lua"},
 										{"Dungeon 3","./plans/Dungeon_03.plan.lua"},
@@ -63,7 +63,7 @@ end
 if game.level == 1 then game.curentmap = "./plans/Dungeon_01.plan.lua" end
 if game.level == 2 then game.curentmap = "./plans/Dungeon_02.plan.lua" end
 if game.level == 3 then game.curentmap = "./plans/Dungeon_03.plan.lua" end
-if game.level > 3 then game.curentmap = nil end
+if game.level > 3 then game.level = 0 game.status = "gameover" return end
 if ((game.curentmap) and (game.curentmap ~= "exit")) then dofile (game.curentmap) game.status = "ingame"
 else game.status = "select_game" end
 end
