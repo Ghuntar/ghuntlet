@@ -97,3 +97,19 @@ screen.print(SCREEN_UP, 56, 40,"tile_number : "..tile_number)
 
 render()
 end
+
+
+local mapfile = io.open ("../Scripts/newmap.map","w")
+io.output(mapfile)
+local towrite = ""
+for ty = 0 , map_height-1 do
+	for tx = 0, map_width-1 do
+		local towrite_tile = ScrollMap.getTile(MAP , tx , ty)
+		towrite = towrite..tostring(towrite_tile).."|"
+	end
+	towrite = towrite.."\n"
+end
+io.write (towrite)
+io.close()
+
+
