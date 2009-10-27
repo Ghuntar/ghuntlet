@@ -2,8 +2,8 @@
 -- a Gauntlet pseudo clone by Ghuntar WALDMEISTER.
 
 --Add more path to run modules
-package.path = package.path.."/lua/scripts/Ghuntlet/lib/?.lua;"
-package.path = package.path.."/media/DATAZ/LUA/Ghuntlet/lib/?.lua;"
+--package.path = package.path.."/lua/scripts/Ghuntlet/lib/?.lua;"
+--package.path = package.path.."/media/DATAZ/LUA/Ghuntlet/lib/?.lua;"
 
 --Load libraries
 --heroz = require "libheroz"
