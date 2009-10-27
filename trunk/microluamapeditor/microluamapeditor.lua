@@ -1,20 +1,23 @@
 -- microluamapeditor
 
-function selectfile()
+
+
+
+function selectfile(ext)
 local files = {}
 local nbFiles = 0
 local selectedFile = {}
 local startList = 0
 local selected = 0
-local mapFile = ""
+local planFile = ""
 
-local bgupcolor = Color.new(0, 0, 0)
-local bgdowncolor = Color.new(0, 0, 0)
+local bgupcolor = Color.new(0, 0, 10)
+local bgdowncolor = Color.new(0, 0, 10)
 local fgupcolor = Color.new(31, 31, 31)
 local filenamecolor = Color.new(31, 31, 31)
 local dirnamecolor = Color.new(31, 31, 0)
 local selectcolor = Color.new(0, 31, 0)
-local microluacolor = Color.new(31, 0, 0)
+local microluacolor = Color.new(31, 15, 0)
 
 
 local function fileExists(fname)
@@ -31,7 +34,7 @@ local function reInit()
 	Debug.OFF()
 	startList = 0
 	selected = 0
-	mapFile = ""
+	planFile = ""
 	files = System.listDirectory(System.currentDirectory())
 end
 
@@ -56,7 +59,7 @@ local function drawList(dirname)
 				screen.print(SCREEN_DOWN, 8, y, "["..file.name.."]", color)
 			else
 				screen.print(SCREEN_DOWN, 8, y, " "..file.name, color)
-				if string.lower(string.sub(file.name, -4)) == ".lua" then
+				if string.lower(string.sub(file.name, -#ext)) == ext then
 					screen.print(SCREEN_DOWN, 0, y, "*", color)
 				end
 			end
@@ -78,7 +81,7 @@ local function goUp()
 end
 
 
---##########################################################
+--##################
 
 
 while true do
@@ -99,8 +102,8 @@ while true do
 		startList = 0
 	end
 	if (Keys.newPress.A or Keys.newPress.Start or Stylus.doubleClick) then
-		if string.lower(string.sub(selectedFile.name, -4)) == ".map" then -- load map file
-			mapFile = selectedFile.name
+		if string.lower(string.sub(selectedFile.name, -#ext)) == ext then -- load map file
+			planFile = selectedFile.name
 		else
 			--[[if selectedFile.isDir and fileExists(selectedFile.name.."/index.lua") then -- launch directory/index.lua script
 				System.changeDirectory(selectedFile.name)
@@ -118,22 +121,23 @@ while true do
 	screen.drawFillRect(SCREEN_DOWN, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, bgdowncolor)
 
 	drawList(System.currentDirectory())
-	screen.print(SCREEN_UP, 0, 184, (selected + 1).."/"..nbFiles, fgupcolor)
-	str = "Micro LUA DS "..MICROLUA_VERSION
+	str = "Micro LUA MAP EDITOR"
 	screen.print(SCREEN_UP, (SCREEN_WIDTH / 2) - (8 * str:len() / 2), 32, str, microluacolor)
 	str = "(c) Risike 2009"
-	screen.print(SCREEN_UP, (SCREEN_WIDTH / 2) - (8 * str:len() / 2), 56, "By Risike", fgupcolor)
+	screen.print(SCREEN_UP, (SCREEN_WIDTH / 2) - (8 * str:len() / 2), 56, "Map Editor By Ghuntar", fgupcolor)
+	screen.print(SCREEN_UP, (SCREEN_WIDTH / 2) - (8 * str:len() / 2), 64, "Shell By Risike", fgupcolor)
 	screen.print(SCREEN_UP, 8, 90, " dir: "..System.currentDirectory(), fgupcolor)
 	screen.print(SCREEN_UP, 8, 106, "file: "..selectedFile.name, fgupcolor)
 	screen.print(SCREEN_UP, 8, 144, "Move stylus up and down to navigate", fgupcolor)
 	screen.print(SCREEN_UP, 8, 152, "Stylus double click: launch", fgupcolor)
 	screen.print(SCREEN_UP, 8, 160, "Up, Down, Left, Right: navigate", fgupcolor)
 	screen.print(SCREEN_UP, 8, 168, "A or Start: launch", fgupcolor)
+	screen.print(SCREEN_UP, 0, 184, (selected + 1).."/"..nbFiles, fgupcolor)
 
 	render()
 
-	if mapFile ~= "" then
-		return System.currentDirectory() , mapFile
+	if planFile ~= "" then
+		return System.currentDirectory() , planFile
 		--reInit()
 	end
 
@@ -142,26 +146,32 @@ end
 
 
 
+game = {}
+curdir , selectedfile = selectfile(".plan.lua")
+System.changeDirectory("..")
+dofile ("./plans/"..selectedfile)
+
+
 --definition du tileset
 local tileset = {}
-tileset.image = Image.load("./Ghuntlet_dungeon.png", VRAM)
+tileset.image = smap.BG_Tileset
 tileset.width = Image.width(tileset.image)
 tileset.height = Image.height (tileset.image)
 tileset.x = 0
 tileset.y = 0
-
+--[[
 --définition de la map
 local tile_width  = 16
 local tile_height = 16
 local map_width = 28
 local map_height = 28
-local xmax = tile_width * map_width
-local ymax = tile_height * map_height
 local smap = {}
---smap.map = "./Dungeon_01_BG.map"
 curdir , selectedfile = selectfile()
 smap.map = curdir.."/"..selectedfile
 smap.tileset = tileset.image
+]]--
+local xmax = tile_width * map_width
+local ymax = tile_height * map_height
 smap.x = 0
 smap.y = 0
 
@@ -171,7 +181,7 @@ cursor.x = 0
 cursor.y = 0
 
 
-local MAP = ScrollMap.new(smap.tileset, smap.map, map_width, map_height, tile_width, tile_height)
+--local MAP = ScrollMap.new(smap.tileset, smap.map, map_width, map_height, tile_width, tile_height)
 local current_tile = 0
 local tile_number = 0
 --######################################################################
@@ -215,17 +225,17 @@ else -- ###Mode MAP
 	if smap.x > xmax - SCREEN_WIDTH then smap.x = xmax - SCREEN_WIDTH end
 	if smap.y < 0 then smap.y = 0 end
 	if smap.y > ymax -SCREEN_HEIGHT then smap.y = ymax - SCREEN_HEIGHT end
-	ScrollMap.scroll (MAP, smap.x, smap.y)
+	ScrollMap.scroll (smap.BG_smap, smap.x, smap.y)
 
 	--Traitement du curseur
 	cursor.x , cursor.y = 16*math.floor(Stylus.X / 16) , 16*math.floor(Stylus.Y / 16)
 	if Keys.held.Up and Stylus.held then
 		screen.print(SCREEN_UP, 56, 48,"UP Pressed")
-		ScrollMap.setTile (MAP, math.floor((smap.x + cursor.x)/16) , math.floor((smap.y + cursor.y)/16), tile_number)
+		ScrollMap.setTile (smap.BG_smap, math.floor((smap.x + cursor.x)/16) , math.floor((smap.y + cursor.y)/16), tile_number)
 	else
-		current_tile = ScrollMap.getTile(MAP , math.floor((smap.x + cursor.x)/16) , math.floor((smap.y + cursor.y)/16))
+		current_tile = ScrollMap.getTile(smap.BG_smap , math.floor((smap.x + cursor.x)/16) , math.floor((smap.y + cursor.y)/16))
 	end
-	ScrollMap.draw(SCREEN_DOWN, MAP)
+	ScrollMap.draw(SCREEN_DOWN, smap.BG_smap)
 	screen.blit (SCREEN_DOWN, cursor.x, cursor.y, cursor.sprite)
 end
 
@@ -243,13 +253,14 @@ screen.print(SCREEN_UP, 56, 40,"tile_number : "..tile_number)
 render()
 end
 
+print (System.currentDirectory().."\n")
 
-local mapfile = io.open (curdir.."/newmap.map","w")
+local mapfile = io.open (System.currentDirectory().."/maps/"..selectedfile..".new","w")
 io.output(mapfile)
 local towrite = ""
 for ty = 0 , map_height-1 do
 	for tx = 0, map_width-1 do
-		local towrite_tile = ScrollMap.getTile(MAP , tx , ty)
+		local towrite_tile = ScrollMap.getTile(smap.BG_smap , tx , ty)
 		towrite = towrite..tostring(towrite_tile).."|"
 	end
 	towrite = towrite.."\n"
