@@ -29,7 +29,7 @@ function select_in_list (...)
 		screen.print(SCREEN_DOWN, 30 ,20+selection*espacement, "=>")
 		render()
 	end
-return select_list[selection][2],selection
+return select_list[selection][2],select_list[selection][3]
 end
 
 --##############################################
@@ -47,9 +47,9 @@ end
 function select_hero()
     game.hero = select_in_list ( "Choose your Character",{
                                                           {"Black Mage","BLACKMAGE"},
-                                                          {"Valkyrie","Valkyrie"},
-                                                          {"Maiden Guard","MaidenGuard"},
-                                                          {"White Mage","WhiteMage"}
+                                                          {"Valkyrie","VALKYRIE"},
+                                                          {"Maiden Guard","MAIDENGUARD"},
+                                                          --[[{"White Mage","WhiteMage"}]]--
                                                          }, 12)
     dofile ("./datas/"..game.hero..".lua")
     dofile ("./datas/"..game.hero..".ds.lua")

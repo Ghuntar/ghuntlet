@@ -14,7 +14,7 @@ MOB = {
 	width = 16,
 	height = 16,
 	realpos = COORD:new(),
-	lastpos = COORD:new(),
+	newpos = COORD:new(),
 	move = COORD:new(),
 	dir = 3,
 	status = "OK",
@@ -32,10 +32,13 @@ function MOB:init()
 end
 
 function MOB:new(obj)
-	local newobject = obj or {}
-	setmetatable(newobject, self)
-	self.__index = self
-	return newobject
+    local newobject = obj or {}
+    self.half_width = self.width /2
+    self.half_height = self.height /2
+    self.life = self.maxlife
+    setmetatable(newobject, self)
+    self.__index = self
+    return newobject
 end
 
 function MOB:copy(copied)
@@ -43,10 +46,10 @@ function MOB:copy(copied)
 	return newcopy
 end
 
-function MOB:whichtile(smap)
-	local currenttilex = math.floor (self.realpos.x / tile_width)
-	local currenttiley = math.floor (self.realpos.y / tile_height)
-	return ScrollMap.getTile(smap, currenttilex, currenttiley)
+function MOB:whichtile(tsmap)
+	local currenttilex = math.floor (self.realpos.x / smap.tile_width)
+	local currenttiley = math.floor (self.realpos.y / smap.tile_height)
+	return ScrollMap.getTile(tsmap, currenttilex, currenttiley)
 end
 
 function MOB:changelifestatus()
@@ -56,6 +59,31 @@ function MOB:changelifestatus()
 	if self.life < 1 then status = "Dead" end
 	return status
 	end
+
+function MOB:compute_move ()
+		local move = {}
+		move = COORD:new {0 , 0}
+		if self.dir == 1 then  move.x = 0            move.y = -self.speed end
+		if self.dir == 2 then  move.x = -self.speed  move.y = 0 end
+		if self.dir == 3 then  move.x = 0            move.y = self.speed end
+		if self.dir == 4 then  move.x = self.speed   move.y = 0 end
+		if self.dir == 5 then  move.x = self.speed * 0.8   move.y = -self.speed*0.8 end
+		if self.dir == 6 then  move.x = -self.speed * 0.8  move.y = -self.speed * 0.8 end
+		if self.dir == 7 then  move.x = -self.speed * 0.8  move.y = self.speed * 0.8 end
+		if self.dir == 8 then  move.x = self.speed * 0.8   move.y = self.speed * 0.8 end
+		return move
+		end
+
+function MOB:skirt ()
+	local temppos = COORD:new()
+	temppos.x , temppos.y = self.realpos.x , self.newpos.y
+	if not (is_in_table (temppos:whichtile (smap.BG_smap),smap.BG_blocking_tiles)) then return temppos end
+	temppos.x , temppos.y = self.newpos.x , self.realpos.y
+	if not (is_in_table (temppos:whichtile (smap.BG_smap),smap.BG_blocking_tiles)) then return temppos end
+	temppos = self.realpos
+	return temppos
+
+end
 
 --####################################
 --#              Heros              #

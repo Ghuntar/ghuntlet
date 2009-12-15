@@ -36,7 +36,7 @@ end
 function MOB:display()
 self:set_spr_dir()
 self.scrpos = self:displaycoords()
-print ("\n dataz", SCREEN_UP, self.scrpos.x, self.scrpos.y, self.spr_dir, "\n")
+--print ("\n dataz", SCREEN_UP, self.scrpos.x, self.scrpos.y, self.spr_dir, "\n")
 self.sprite:playAnimation(SCREEN_UP, self.scrpos.x, self.scrpos.y, self.spr_dir)
 end
 
