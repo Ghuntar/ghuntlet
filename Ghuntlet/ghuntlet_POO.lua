@@ -12,6 +12,7 @@ dofile ("./libs/lib_game_mechanicz.lua")
 dofile ("./libs/lib_mobz.lua")
 dofile ("./libs/lib_selectionz.lua")
 dofile ("./libs/lib_display_DS.lua")
+dofile ("./libs/lib_controls_DS.lua")
 
 
 

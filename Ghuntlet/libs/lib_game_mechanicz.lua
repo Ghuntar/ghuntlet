@@ -38,6 +38,12 @@ function COORD.__sub(obj1,obj2)
 	return new
 end
 
+function COORD:whichtile(tsmap)
+	local currenttilex = math.floor (self.x / smap.tile_width)
+	local currenttiley = math.floor (self.y / smap.tile_height)
+	return ScrollMap.getTile(tsmap, currenttilex, currenttiley)
+end
+
 --####################################
 --#              Misc               #
 --##################################
@@ -65,20 +71,105 @@ function ingame()
 -- Initialisation
 game.moblist = {}
 game.itemlist = {}
+game.level = smap.level
 
-hero = game.hero:new()
+if     game.hero == "BLACKMAGE" then hero = BLACKMAGE:new()
+elseif game.hero == "VALKYRIE" then hero = VALKYRIE:new()
+elseif game.hero == "MAIDENGUARD" then hero = MAIDENGUARD:new()
+elseif game.hero == "WHITEMAGE" then hero = WHITEMAGE:new()
+else   hero = BLACKMAGE:new()
+end
+
+--[[
+print (game.hero)
+print (_G[game.hero])
+--for k,v in pairs (_G) do print (k,v) end
+for k,v in pairs (Mls) do print (k,v) end
+hero = _G[game.hero]:new()
+]]--
+
 hero:init()
+hero.scrpos.x = 120
+hero.scrpos.y = 98
+hero.realpos = smap.hero_startpos
 
-Controls.read()
-    while (game.status == "ingame" or game.status == "pause") do
-        Controls.read()
-        if (Keys.newPress.Start and (#game.moblist > 0)) then game.status = "exit" end
-        if (Keys.newPress.Start and (#game.moblist < 1)) then game.status = "exit" end
-        screen.print(SCREEN_UP,0,0,"Press Start to exit")
-        hero:display()
-        render()
+testcoord = COORD:new({x=250,y=250})
+ratmut = MONSTER:new({name = "Skeleton",realpos = COORD:new({x=250,y=250})})
+
+
+
+--Controls.read()
+
+---------------
+-- Main loop --
+---------------
+
+while (game.status == "ingame" or game.status == "pause") do
+    Controls.read()
+    --UPKEEP : GAME STATUS
+    if (Keys.newPress.Start and (#game.moblist > 0)) then game.status = "exit" end
+    if (Keys.newPress.Start and (#game.moblist < 1)) then game.status = "exit" end
+    if game.status == "pause" then pause () end
+
+
+    --UPKEEP : LIFE
+
+    hero.status = hero:changelifestatus()
+    if hero.status == "Dead" then game.status = "gameover" end
+
+    for k , v in ipairs (game.moblist) do
+        v.status = v:changelifestatus()
+            if v.status == "Dead" then
+                v = nil
+                table.remove(game.moblist, k)
+                end
+        end
+
+    --Read hero new direction
+    local newdir = get_dir()
+    if newdir ~= 0 and newdir ~= nil then
+        hero.dir = newdir
+        hero.move = hero:compute_move()
+    else hero.move = {x = 0 , y = 0}
+    end
+    hero.newpos = hero.realpos + hero.move
+    --Look for events (door, stairs, whatever...)
+
+    --Look for a wall
+    if not is_in_table (hero.newpos:whichtile(smap.BG_smap) , smap.BG_blocking_tiles) then  hero.realpos = hero.newpos
+    else hero.realpos = hero:skirt () end
+    --hero.realpos = hero.newpos
+    --Compute Monsters new direction
+
+    for k , v in ipairs (game.moblist) do
+        v.dir = v:ia_mov()
+        v.move = compute_move (v)
     end
 
-    game.status = "exit"
+    --
+
+    --DISPLAY : Background MAP
+smap.scroll = hero.realpos - hero.scrpos + smap.offset
+ScrollMap.draw(SCREEN_UP, smap.BG_smap)
+ScrollMap.scroll(smap.BG_smap, smap.scroll.x, smap.scroll.y)
+
+    --DISPLAY : Sprites
+    hero:display()
+
+    --DISPLAY : Foreground MAP
+ScrollMap.draw(SCREEN_UP, smap.FG_smap)
+ScrollMap.scroll(smap.FG_smap, smap.scroll.x, smap.scroll.y)
+
+
+    -- DISPLAY SCREEN_DOWN
+	screen.print(SCREEN_DOWN,0,0,"Press Start to exit")
+	--screen.print(SCREEN_DOWN,0,8,"Press Start to exit")
+	screen.print (SCREEN_DOWN, 0 , 8, "HRX: "..hero.realpos.x.." HRY: "..hero.realpos.y.." HSX: "..hero.scrpos.x.." HSY: "..hero.scrpos.y)
+
+
+	render()
+end
+
+--game.status = "exit"
 end
 

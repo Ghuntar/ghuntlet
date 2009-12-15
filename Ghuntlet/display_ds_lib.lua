@@ -14,9 +14,9 @@ function Heros:init_sprite()
 	self.spr_width = 16
 	self.spr_height = 16
 	self.sprite = Sprite.new("./images/Daemon.png", self.spr_width, self.spr_height, VRAM)
-	if self.name == "Valkyrie" then self.sprite = Sprite.new("./images/Valkyrie.png", self.spr_width, self.spr_height, VRAM) end
+	if self.name == "Valkyrie" then self.sprite = Sprite.new("./images/Valkyrie_Sprite.png", self.spr_width, self.spr_height, VRAM) end
 	if self.name == "BlackMage" then self.sprite = Sprite.new("./images/BlackMage_Sprite.png", self.spr_width, self.spr_height, VRAM) end
-	if self.name == "MaidenGuard" then self.sprite = Sprite.new("./images/MaidenGuard.png", self.spr_width, self.spr_height, VRAM) end
+	if self.name == "MaidenGuard" then self.sprite = Sprite.new("./images/MaidenGuard_Sprite.png", self.spr_width, self.spr_height, VRAM) end
 	self.sprite:addAnimation({2,6}, 200) -- Walk up
 	self.sprite:addAnimation({1,5}, 200) -- Walk right
 	self.sprite:addAnimation({0,4}, 200) -- Walk down
