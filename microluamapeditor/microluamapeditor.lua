@@ -168,7 +168,7 @@ end
 --curdir , selectedfile = selectfile(".plan.lua")
 --System.changeDirectory("..")
 --dofile ("./plans/"..selectedfile)
-System.changeDirectory("/media/DATAZ/LUA/ghuntlet/trunk/microluamapeditor")
+--System.changeDirectory("/media/DATAZ/LUA/ghuntlet/trunk/microluamapeditor")
 dofile ("./plans/Camp.plan.lua")
 
 -- Variables définies par le fichier de conf (.plan.lua)
@@ -302,6 +302,15 @@ screen.print(SCREEN_UP, 56, 40,"tile_number : "..tile_number)
 screen.print(SCREEN_UP, 0, 56,"current_tile.x : "..smap.current_tile.x)
 screen.print(SCREEN_UP, 128, 56,"current_tile.y : "..smap.current_tile.y)
 screen.print(SCREEN_UP, 56, 64, "current_tile : "..smap.current_tile.number)
+
+screen.print(SCREEN_UP, 0, 160,"Press L to swap to choose your TILE")
+screen.print(SCREEN_UP, 0, 168,"Press UP and the Stylet to DRAW a TILE")
+screen.print(SCREEN_UP, 0, 176, "Press START to QUIT")
+screen.print(SCREEN_UP, 0, 184, "Press B to do NOTHING ;)")
+screen.print(SCREEN_UP, 0, 192, "OUT OF RANGE")
+
+
+
 
 
 render()
