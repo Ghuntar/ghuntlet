@@ -70,16 +70,24 @@ function ingame()
 
 -- Initialisation
 game.moblist = {}
+ratmut = MONSTER:new({name = "Skeleton",realpos = COORD:new({x=240,y=260})})
+game.moblist[1] = ratmut
+
+
+
+
 game.itemlist = {}
 game.level = smap.level
 
+--[[ --Vieux test de quand _G[XXX] ne fonctionnait pas sous MLS
 if     game.hero == "BLACKMAGE" then hero = BLACKMAGE:new()
 elseif game.hero == "VALKYRIE" then hero = VALKYRIE:new()
 elseif game.hero == "MAIDENGUARD" then hero = MAIDENGUARD:new()
 elseif game.hero == "WHITEMAGE" then hero = WHITEMAGE:new()
 else   hero = BLACKMAGE:new()
 end
-
+]]--
+hero = _G[game.hero]:new()
 --[[
 print (game.hero)
 print (_G[game.hero])
@@ -93,8 +101,7 @@ hero.scrpos.x = 120
 hero.scrpos.y = 98
 hero.realpos = smap.hero_startpos
 
-testcoord = COORD:new({x=250,y=250})
-ratmut = MONSTER:new({name = "Skeleton",realpos = COORD:new({x=250,y=250})})
+--testcoord = COORD:new({x=250,y=250})
 
 
 
@@ -143,7 +150,7 @@ while (game.status == "ingame" or game.status == "pause") do
 
     for k , v in ipairs (game.moblist) do
         v.dir = v:ia_mov()
-        v.move = compute_move (v)
+        v.move = v:compute_move ()
     end
 
     --
@@ -154,6 +161,9 @@ ScrollMap.draw(SCREEN_UP, smap.BG_smap)
 ScrollMap.scroll(smap.BG_smap, smap.scroll.x, smap.scroll.y)
 
     --DISPLAY : Sprites
+	for k , v in ipairs (game.moblist) do
+		v:display()
+	end
     hero:display()
 
     --DISPLAY : Foreground MAP

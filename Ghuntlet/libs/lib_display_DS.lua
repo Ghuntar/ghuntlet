@@ -11,6 +11,7 @@ MOB.spr_height = 16
 MOB.spr_faces = 1
 MOB.spr_dir = 1
 MOB.sprite = Sprite.new("./images/deadbody.png", MOB.spr_width, MOB.spr_height, VRAM)
+MOB.sprite:addAnimation({0}, 200)
 
 function MOB:set_spr_dir()
 	if self.spr_faces == 1 then
@@ -42,7 +43,7 @@ end
 
 
 --####################################
---#              Heros              #
+--#              Hero               #
 --##################################
 
 
