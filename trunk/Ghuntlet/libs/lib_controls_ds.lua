@@ -6,7 +6,7 @@ function get_dir ()
 --2|0|4
 --7|3|8
 	local direction = 0
-	Controls.read()
+	--Controls.read()
 		if Keys.held.Up and Keys.held.Right then direction = 5
 		elseif Keys.held.Up and Keys.held.Left then direction = 6
 		elseif Keys.held.Down and Keys.held.Left then direction = 7

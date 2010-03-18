@@ -182,7 +182,6 @@ ScrollMap.draw(SCREEN_UP, smap.FG_smap)
 ScrollMap.scroll(smap.FG_smap, smap.scroll.x, smap.scroll.y)
 
     --DISPLAY : HUD & Floating text
-    -- Not yet implemented
     -- Hero Status
     screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height, hero.status)
     screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height/2, hero.life)
@@ -192,7 +191,10 @@ ScrollMap.scroll(smap.FG_smap, smap.scroll.x, smap.scroll.y)
         screen.print (SCREEN_UP, v.scrpos.x, v.scrpos.y - v.spr_height/2, v.life)
     end
 
-    
+    -- Game information
+    if #game.moblist > 0 then screen.print (SCREEN_UP, justify (35) , 8 , "Kill "..#game.moblist.." more to complete the Level")
+    else screen.print (SCREEN_UP, justify (30) , 8 , "Level completed : PRESS START") end
+
     
     -- DISPLAY SCREEN_DOWN
 	screen.print(SCREEN_DOWN,0,0,"Press Start to exit")
