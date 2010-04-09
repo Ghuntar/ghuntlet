@@ -19,9 +19,9 @@ MOB = {
 	dir = 3,
 	status = "OK",
 	touch_attack = 0,
-	d_attack = "Finger",
+	--d_attack = "Finger",
 	--attack = ATTACK:new (self.d_attack),
-	spell_timer = Timer.new(),
+	--spell_timer = Timer.new(),
 	inventory = {}
 	}
 
