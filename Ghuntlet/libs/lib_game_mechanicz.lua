@@ -74,18 +74,19 @@ function ingame()
 
 --test pour génération de MOB --START--
 
-game.mob_type_list = {"SKELETON"}
+game.mob_type_list = {"SKELETON","BLACKMAGE_LB"}
 for k, v in pairs (game.mob_type_list) do
     dofile ("./datas/"..v..".lua")
     dofile ("./datas/"..v..".ds.lua")
     end
 
 game.moblist = {}
-game.moblist[1] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=240,y=260})})
-game.moblist[2] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=240,y=270})})
-game.moblist[3] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=240,y=280})})
-
-
+for i=1,100 do
+    game.moblist[i] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=120+i,y=120+i})})
+    end
+for i =101,150 do
+    game.moblist[i] = BLACKMAGE_LB:new({name = "BlackMage",realpos = COORD:new({x=120+i,y=120+i})})
+    end
 
 --test pour génération de MOB --STOP--
 
