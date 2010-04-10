@@ -25,39 +25,39 @@ MOB = {
 	inventory = {}
 	}
 
-function MOB:init()
+function MOB:init ()
 	self.half_width = self.width /2
 	self.half_height = self.height /2
 	self.life = self.maxlife
 end
 
-function MOB:new(obj)
+function MOB:new (obj)
     local newobject = obj or {}
     self.half_width = self.width /2
     self.half_height = self.height /2
+    self.diagspeed = self.speed * 0.7
     self.life = self.maxlife
     setmetatable(newobject, self)
     self.__index = self
     return newobject
 end
 
-function MOB:copy(copied)
+function MOB:copy (copied)
 	local newcopy = MOB:new(copied)
 	return newcopy
 end
 
-function MOB:whichtile(tsmap)
+function MOB:whichtile (tsmap)
 	local currenttilex = math.floor (self.realpos.x / smap.tile_width)
 	local currenttiley = math.floor (self.realpos.y / smap.tile_height)
 	return ScrollMap.getTile(tsmap, currenttilex, currenttiley)
 end
 
-function MOB:changelifestatus()
+function MOB:changelifestatus ()
 	local status = "OK"
-	if self.life < self.maxlife then status = "Wounded" end
-	if self.life < self.maxlife*0.2 then status = "Near death" end
-	if self.life < 1 then status = "Dead" end
-	return status
+	if self.life < self.maxlife then self.status = "Wounded" end
+	if self.life < self.maxlife*0.2 then self.status = "Near death" end
+	if self.life < 1 then self.status = "Dead" end
 	end
 
 function MOB:compute_move ()
@@ -67,10 +67,10 @@ function MOB:compute_move ()
 		if self.dir == 2 then  move.x = -self.speed  move.y = 0 end
 		if self.dir == 3 then  move.x = 0            move.y = self.speed end
 		if self.dir == 4 then  move.x = self.speed   move.y = 0 end
-		if self.dir == 5 then  move.x = self.speed * 0.8   move.y = -self.speed*0.8 end
-		if self.dir == 6 then  move.x = -self.speed * 0.8  move.y = -self.speed * 0.8 end
-		if self.dir == 7 then  move.x = -self.speed * 0.8  move.y = self.speed * 0.8 end
-		if self.dir == 8 then  move.x = self.speed * 0.8   move.y = self.speed * 0.8 end
+		if self.dir == 5 then  move.x = self.diagspeed   move.y = -self.speed* 0.7 end
+		if self.dir == 6 then  move.x = -self.diagspeed  move.y = -self.diagspeed end
+		if self.dir == 7 then  move.x = -self.diagspeed  move.y = self.diagspeed end
+		if self.dir == 8 then  move.x = self.diagspeed   move.y = self.diagspeed end
 		return move
 		end
 
@@ -82,14 +82,58 @@ function MOB:skirt ()
 	if not (is_in_table (temppos:whichtile (smap.BG_smap),smap.BG_blocking_tiles)) then return temppos end
 	temppos = self.realpos
 	return temppos
-
+    end
+    
+function MOB:playturn (mobnumber)
+    self:upkeep (mobnumber) -- To see if the mob is still alive 
+    self:chooseanewdir()-- To choose a new direction and get a "newpos"
+    -- Not yet implemented -- To see if the "newpos" trigger an event
+    self:makeamove-- To see if the "newpos" is legal (not in a wall or pitt or something else) and execute the move
+    -- To see if there is a collison with something dangerous
 end
 
+function MOB:upkeep (mobnumber)
+    self:changelifestatus ()
+    if self.status == "Dead" then
+        self = nil
+        table.remove (game.moblist, mobnumber)
+    end
+end
+    
+function MOB:chooseanewdir ()
+    self.dir = self:ia_mov ()
+    self.move = self:compute_move ()
+    self.newpos = self.realpos + self.move
+end
+
+function MOB:makeamove ()
+    if not is_in_table (self.newpos:whichtile(smap.BG_smap) , smap.BG_blocking_tiles) then  self.realpos = self.newpos
+    else self.realpos = self:skirt () end
+
+end
+    
 --####################################
 --#              Heros              #
 --##################################
 
 HEROS = MOB:new({nickname = "Nemo"})
+
+function HEROS:upkeep ()
+    self:changelifestatus ()
+    if self.status == "Dead" then
+    game.status = "gameover"
+    end
+end
+
+function HEROS:chooseanewdir()
+    local newdir = get_dir()
+    if newdir ~= 0 and newdir ~= nil then
+        self.dir = newdir
+        self.move = self:compute_move()
+    else self.move = {x = 0 , y = 0}
+    end
+    self.newpos = self.realpos + self.move
+end
 
 --####################################
 --#              Monster            #
