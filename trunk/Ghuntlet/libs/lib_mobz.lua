@@ -88,28 +88,26 @@ function MOB:playturn (mobnumber)
     self:upkeep (mobnumber) -- To see if the mob is still alive 
     self:chooseanewdir()-- To choose a new direction and get a "newpos"
     -- Not yet implemented -- To see if the "newpos" trigger an event
-    self:makeamove-- To see if the "newpos" is legal (not in a wall or pitt or something else) and execute the move
+    self:makeamove ()-- To see if the "newpos" is legal (not in a wall or pitt or something else) and execute the move
     -- To see if there is a collison with something dangerous
 end
 
 function MOB:upkeep (mobnumber)
     self:changelifestatus ()
     if self.status == "Dead" then
-        self = nil
-        table.remove (game.moblist, mobnumber)
+    self = nil
+    table.remove (game.moblist, mobnumber)
     end
 end
     
 function MOB:chooseanewdir ()
-    self.dir = self:ia_mov ()
-    self.move = self:compute_move ()
-    self.newpos = self.realpos + self.move
 end
 
 function MOB:makeamove ()
-    if not is_in_table (self.newpos:whichtile(smap.BG_smap) , smap.BG_blocking_tiles) then  self.realpos = self.newpos
-    else self.realpos = self:skirt () end
-
+    if not is_in_table (self.newpos:whichtile(smap.BG_smap) , smap.BG_blocking_tiles)
+        then self.realpos = self.newpos
+        else self.realpos = self:skirt ()
+    end
 end
     
 --####################################
@@ -140,7 +138,11 @@ end
 --##################################
 
 MONSTER = MOB:new()
-
+function MONSTER:chooseanewdir ()
+    self.dir = self:ia_mov ()
+    self.move = self:compute_move ()
+    self.newpos = self.realpos + self.move
+end
 function MONSTER:ia_mov ()
 	local newdir = 0
 	if self.realpos.x < hero.realpos.x and self.realpos.y < hero.realpos.y then newdir = 8 end

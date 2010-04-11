@@ -81,13 +81,15 @@ for k, v in pairs (game.mob_type_list) do
     end
 
 game.moblist = {}
-for i=1,100 do
-    game.moblist[i] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=120+i,y=120+i})})
-    end
-for i =101,150 do
-    game.moblist[i] = BLACKMAGE_LB:new({name = "BlackMage",realpos = COORD:new({x=120+i,y=120+i})})
-    end
 
+
+-- for i=1,100 do
+    -- game.moblist[i] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
+    -- end
+-- for i =101,150 do
+    -- game.moblist[i] = BLACKMAGE_LB:new({name = "BlackMage",realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
+    -- end
+    
 --test pour génération de MOB --STOP--
 
 
@@ -95,6 +97,8 @@ for i =101,150 do
 
 game.itemlist = {}
 game.level = smap.level
+game.clock = Timer.new()
+game.skippedframes = 0
 
 hero = _G[game.hero]:new()
 hero:init()
@@ -117,7 +121,29 @@ while (game.status == "ingame" or game.status == "pause") do
     if (Keys.newPress.Start and (#game.moblist < 1)) then game.status = "exit" end
     if game.status == "pause" then pause () end
 
+game.clock:start()
 
+-- tests de génération de MOB --START--
+if (Keys.newPress.A)
+then game.moblist[#game.moblist + 1] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
+end
+if (Keys.newPress.B)
+then table.remove (game.moblist, #game.moblist)
+end
+-- tests de génération de MOB --STOP--
+
+
+hero:playturn()
+for k , v in ipairs (game.moblist) do
+    v:playturn(k)
+    if (game.clock:time () > 30) then
+        game.clock:stop ()
+        break
+    end
+end
+
+
+--[[
     --UPKEEP : LIFE
 
     hero.status = hero:changelifestatus()
@@ -160,6 +186,8 @@ while (game.status == "ingame" or game.status == "pause") do
 
     --Test for collisions
     -- Not yet implemented
+]]--
+
 
     --DISPLAY : Background MAP
 smap.scroll = hero.realpos - hero.scrpos + smap.offset
@@ -172,6 +200,10 @@ ScrollMap.scroll(smap.BG_smap, smap.scroll.x, smap.scroll.y)
     -- -Monsters
 	for k , v in ipairs (game.moblist) do
 		v:display()
+    if (game.clock:time () > 30) then
+        game.clock:stop ()
+        break
+    end
 	end
     -- -Hero
     hero:display()
@@ -190,6 +222,10 @@ ScrollMap.scroll(smap.FG_smap, smap.scroll.x, smap.scroll.y)
     for k, v in ipairs (game.moblist) do
         screen.print (SCREEN_UP, v.scrpos.x, v.scrpos.y - v.spr_height, v.status)
         screen.print (SCREEN_UP, v.scrpos.x, v.scrpos.y - v.spr_height/2, v.life)
+    if (game.clock:time () > 30) then
+        game.clock:stop ()
+        break
+    end
     end
 
     -- Game information
@@ -200,11 +236,21 @@ ScrollMap.scroll(smap.FG_smap, smap.scroll.x, smap.scroll.y)
     -- DISPLAY SCREEN_DOWN
 	screen.print(SCREEN_DOWN,0,0,"Press Start to exit")
 	--screen.print(SCREEN_DOWN,0,8,"Press Start to exit")
-	screen.print (SCREEN_DOWN, 0 , 8, "HRX: "..hero.realpos.x.." HRY: "..hero.realpos.y.." HSX: "..hero.scrpos.x.." HSY: "..hero.scrpos.y)
+	screen.print (SCREEN_DOWN, 0, 8, "HRX: "..hero.realpos.x.." HRY: "..hero.realpos.y.." HSX: "..hero.scrpos.x.." HSY: "..hero.scrpos.y)
+    screen.print (SCREEN_DOWN, 0, 16, "Timer = "..game.clock:time()..".")
+    if (game.clock:time () > 30) then
+    game.skippedframes = game.skippedframes + 1
+	screen.print(SCREEN_DOWN,0,24,"SKIPPED FRAMES")
+    end
+	screen.print(SCREEN_DOWN,0,32,"SKIPPED FRAMES : "..game.skippedframes)
 
 
 	render()
+game.clock:stop()
+game.clock:reset()
+
 end
+
 
 --game.status = "exit"
 end
