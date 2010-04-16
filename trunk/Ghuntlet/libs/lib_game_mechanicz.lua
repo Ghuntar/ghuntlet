@@ -82,14 +82,12 @@ for k, v in pairs (game.mob_type_list) do
 
 game.moblist = {}
 
-
 -- for i=1,100 do
     -- game.moblist[i] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
     -- end
 -- for i =101,150 do
     -- game.moblist[i] = BLACKMAGE_LB:new({name = "BlackMage",realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
     -- end
-    
 --test pour génération de MOB --STOP--
 
 
@@ -141,53 +139,6 @@ for k , v in ipairs (game.moblist) do
         break
     end
 end
-
-
---[[
-    --UPKEEP : LIFE
-
-    hero.status = hero:changelifestatus()
-    if hero.status == "Dead" then game.status = "gameover" end
-
-    for k , v in ipairs (game.moblist) do
-        v.status = v:changelifestatus()
-            if v.status == "Dead" then
-                v = nil
-                table.remove(game.moblist, k)
-                end
-        end
-
-    --Read hero new direction
-    local newdir = get_dir()
-    if newdir ~= 0 and newdir ~= nil then
-        hero.dir = newdir
-        hero.move = hero:compute_move()
-    else hero.move = {x = 0 , y = 0}
-    end
-    hero.newpos = hero.realpos + hero.move
-    --Look for events (door, stairs, whatever...)
-    -- Not yet implemented
-    --Look for a wall
-    if not is_in_table (hero.newpos:whichtile(smap.BG_smap) , smap.BG_blocking_tiles) then  hero.realpos = hero.newpos
-    else hero.realpos = hero:skirt () end
-    --hero.realpos = hero.newpos
-    
-    --Compute Monsters new direction
-    for k , v in ipairs (game.moblist) do
-        v.dir = v:ia_mov()
-        v.move = v:compute_move ()
-        v.newpos = v.realpos + v.move
-        -- Look for an event
-        -- Not yet implemented
-        -- Look for a wall
-        if not is_in_table (v.newpos:whichtile(smap.BG_smap) , smap.BG_blocking_tiles) then  v.realpos = v.newpos
-        else v.realpos = v:skirt () end
-    end
-
-    --Test for collisions
-    -- Not yet implemented
-]]--
-
 
     --DISPLAY : Background MAP
 smap.scroll = hero.realpos - hero.scrpos + smap.offset

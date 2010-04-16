@@ -212,6 +212,8 @@ cursor.y = 0
 
 --local current_tile = 0
 local tile_number = 0
+local tile_type = {x= 0 , y= 0}
+
 --######################################################################
 
 
@@ -239,7 +241,6 @@ if Keys.held.L then
 --Traitement du curseur
 	cursor.x , cursor.y = 16*math.floor(Stylus.X / 16) , 16*math.floor(Stylus.Y / 16)
 	tile_number = ((cursor.y - tileset.y)/tile_height)*(tileset.height/tile_height) + (cursor.x + tileset.x) / tile_width
-
 	screen.blit (SCREEN_DOWN, tileset.x, tileset.y, tileset.image)
 	screen.blit (SCREEN_DOWN, cursor.x, cursor.y, cursor.sprite)
 
@@ -298,10 +299,16 @@ screen.print(SCREEN_UP, 128, 16,"smap.y : "..smap.y)
 screen.print(SCREEN_UP, 0, 32,"tileset.x : "..tileset.x)
 screen.print(SCREEN_UP, 128, 32,"tileset.y : "..tileset.y)
 screen.print(SCREEN_UP, 56, 40,"tile_number : "..tile_number)
+    tile_type.y = math.floor (tile_number / (tileset.width / tile_width))
+    tile_type.x = tile_number - (tile_type.y * (tileset.width / tile_width))
+    screen.blit (SCREEN_UP, 40, 40, smap.BG_Tileset, tile_type.x * tile_width, tile_type.y * tile_height, tile_width, tile_height) -----------------
 
 screen.print(SCREEN_UP, 0, 56,"current_tile.x : "..smap.current_tile.x)
 screen.print(SCREEN_UP, 128, 56,"current_tile.y : "..smap.current_tile.y)
 screen.print(SCREEN_UP, 56, 64, "current_tile : "..smap.current_tile.number)
+
+screen.print(SCREEN_UP, 0, 72, tile_type.x)
+screen.print(SCREEN_UP, 32, 72, tile_type.y)
 
 screen.print(SCREEN_UP, 0, 160,"Press L to swap to choose your TILE")
 screen.print(SCREEN_UP, 0, 168,"Press UP and the Stylet to DRAW a TILE")
