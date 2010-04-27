@@ -19,17 +19,18 @@ MOB = {
 	dir = 3,
 	status = "OK",
 	touch_attack = 0,
-	--d_attack = "Finger",
-	--attack = ATTACK:new (self.d_attack),
-	--spell_timer = Timer.new(),
+    -- d_attack = "Finger",
+    -- attack = ATTACK:new (),
+    -- current_attack = {},
+	-- spell_timer = Timer.new(),
 	inventory = {}
 	}
 
-function MOB:init ()
-	self.half_width = self.width /2
-	self.half_height = self.height /2
-	self.life = self.maxlife
-end
+-- function MOB:init ()
+	-- self.half_width = self.width /2
+	-- self.half_height = self.height /2
+	-- self.life = self.maxlife
+-- end
 
 function MOB:new (obj)
     local newobject = obj or {}
@@ -40,6 +41,10 @@ function MOB:new (obj)
     setmetatable(newobject, self)
     self.__index = self
     return newobject
+end
+
+function MOB:destroy()
+    self:destroy_display()
 end
 
 function MOB:copy (copied)
@@ -82,14 +87,34 @@ function MOB:skirt ()
 	if not (is_in_table (temppos:whichtile (smap.BG_smap),smap.BG_blocking_tiles)) then return temppos end
 	temppos = self.realpos
 	return temppos
+end
+
+function MOB:collide_square (other)
+    if      ((self.realpos.x + self.half_width) > (other.realpos.x - other.half_width))
+        and ((self.realpos.x - self.half_width) < (other.realpos.x + other.half_width))
+        and ((self.realpos.y + self.half_height) > (other.realpos.y - other.half_height))
+        and ((self.realpos.y  - self.half_height) < (other.realpos.y + other.half_height))
+    then return true
+    else return false
     end
-    
+end
+
+function MOB:collide_circle (other)
+    if ((self.realpos.x - other.realpos.x)^2 + (self.realpos.y - other.realpos.y)^2) < (self.half_width + other.half_width)^2
+    then return true
+    else return false
+    end
+end
+
 function MOB:playturn (mobnumber)
     self:upkeep (mobnumber) -- To see if the mob is still alive 
     self:chooseanewdir()-- To choose a new direction and get a "newpos"
     -- Not yet implemented -- To see if the "newpos" trigger an event
-    self:makeamove ()-- To see if the "newpos" is legal (not in a wall or pitt or something else) and execute the move
-    -- To see if there is a collison with something dangerous
+    self:makeamove () -- To see if the "newpos" is legal (not in a wall or pitt or something else) and execute the move
+    if self:chooseifattack() then 
+        self:makeanattack() 
+    end
+    self:collision() -- To see if there is a collison with something dangerous
 end
 
 function MOB:upkeep (mobnumber)
@@ -109,12 +134,23 @@ function MOB:makeamove ()
         else self.realpos = self:skirt ()
     end
 end
-    
+
+function MOB:collision()
+end
+
+function MOB:chooseifattack ()
+return false
+end
+
+function MOB:makeanattack()
+end
+
+
 --####################################
 --#              Heros              #
 --##################################
 
-HEROS = MOB:new({nickname = "Nemo"})
+HEROS = MOB:new({name = "Hero", nickname = "Nemo", d_attack = "PENTACLE"})
 
 function HEROS:upkeep ()
     self:changelifestatus ()
@@ -133,16 +169,41 @@ function HEROS:chooseanewdir()
     self.newpos = self.realpos + self.move
 end
 
+function HEROS:collision()
+    for k, v in ipairs (game.moblist) do
+        if v.touch_attack ~= 0 then 
+            if self:collide_circle(v) then self.life = self.life - v.touch_attack end
+           -- if self:collide_square(v) then self.life = self.life - v.touch_attack end
+        end
+    end
+end
+
+function HEROS:chooseifattack ()
+    if  (Keys.newPress.L) then return true
+    else return false
+    end
+end
+
+function HEROS:makeanattack()
+    if self.attack.timer:time() == 0 then
+        self.attack.realpos = self.realpos
+        self.attack.dir = self.dir
+        self.attack.timer:start()
+    end
+end
+
 --####################################
 --#              Monster            #
 --##################################
 
-MONSTER = MOB:new()
+MONSTER = MOB:new({name = "Monster"})
+
 function MONSTER:chooseanewdir ()
     self.dir = self:ia_mov ()
     self.move = self:compute_move ()
     self.newpos = self.realpos + self.move
 end
+
 function MONSTER:ia_mov ()
 	local newdir = 0
 	if self.realpos.x < hero.realpos.x and self.realpos.y < hero.realpos.y then newdir = 8 end
@@ -152,6 +213,9 @@ function MONSTER:ia_mov ()
 	return newdir
 end
 
+function MONSTER:collision ()
+    if self:collide_circle(hero.attack) then self.life = self.life - hero.attack.touch_attack end
+end
 --####################################
 --#              NPC                #
 --##################################
@@ -162,11 +226,42 @@ NPC = MOB:new()
 --#              Attack             #
 --##################################
 
-ATTACK = MOB:new({age = 0, timer = Timer.new()})
+ATTACK = MOB:new({name = "Attack", age = 0, timer = Timer.new()})
+
+function ATTACK:upkeep()
+    if self.timer:time() > 500 then do
+        self.realpos = {x = -0,y = -0}
+        self.dir = 0
+        self.timer:stop()
+        self.timer:reset()
+    end
+    end
+end
+
+function ATTACK:chooseanewdir ()
+    self.move = self:compute_move ()
+    self.newpos = self.realpos + self.move
+end
+
+function ATTACK:chooseanewdir ()
+    self.move = self:compute_move ()
+    self.newpos = self.realpos + self.move
+end
+
+
+function ATTACK:makeamove ()
+    if not is_in_table (self.newpos:whichtile(smap.BG_smap) , smap.BG_blocking_tiles)
+        then self.realpos = self.newpos
+        else self.realpos = {x=0,y=0} 
+        self.dir = 0
+        self.timer:stop()
+        self.timer:reset()
+    end
+end
 
 --####################################
 --#              Item               #
 --##################################
 
-ITEM = MOB:new()
+ITEM = MOB:new({name = "Item"})
 
