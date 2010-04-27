@@ -62,15 +62,23 @@ end
 --##################################
 
 
-function gameover()
-
+function gameover ()
+	while (not Keys.newPress.Start) do
+		Controls.read()
+		--screen.print(SCREEN_DOWN, 0, 32,"Game status : "..game.status)
+		screen.print(SCREEN_DOWN, 100, 40,"Game Over")
+		screen.print(SCREEN_DOWN, 75, 80,"Press Start to reset")
+		render()
+	end
+	game.status = "select_game"
 end
 
 function ingame()
 
 -- Initialisation
 
-
+game.display = {}
+game.display.floatingtext = true
 
 --test pour génération de MOB --START--
 
@@ -96,14 +104,17 @@ game.moblist = {}
 game.itemlist = {}
 game.level = smap.level
 game.clock = Timer.new()
-game.skippedframes = 0
+-- game.skippedframes = 0
 
 hero = _G[game.hero]:new()
-hero:init()
+-- hero:init()
 hero.scrpos.x = 120
 hero.scrpos.y = 98
 hero.realpos = smap.hero_startpos
-
+dofile ("./datas/".._G[game.hero].d_attack..".lua")
+dofile ("./datas/".._G[game.hero].d_attack..".ds.lua")
+hero.attack = _G[hero.d_attack]:new()
+-- hero.attack = PENTACLE:new()
 
 
 --Controls.read()
@@ -128,10 +139,17 @@ end
 if (Keys.newPress.B)
 then table.remove (game.moblist, #game.moblist)
 end
+if (Keys.newPress.X)
+    then
+        if game.display.floatingtext == true then game.display.floatingtext = false
+        else if game.display.floatingtext == false then game.display.floatingtext = true end
+    end
+end
 -- tests de génération de MOB --STOP--
 
 
 hero:playturn()
+hero.attack:playturn()
 for k , v in ipairs (game.moblist) do
     v:playturn(k)
     if (game.clock:time () > 30) then
@@ -158,6 +176,7 @@ ScrollMap.scroll(smap.BG_smap, smap.scroll.x, smap.scroll.y)
 	end
     -- -Hero
     hero:display()
+    hero.attack:display()
     -- -Attacks
     -- Not yet implemented
     
@@ -166,7 +185,8 @@ ScrollMap.draw(SCREEN_UP, smap.FG_smap)
 ScrollMap.scroll(smap.FG_smap, smap.scroll.x, smap.scroll.y)
 
     --DISPLAY : HUD & Floating text
-    -- Hero Status
+if game.display.floatingtext then 
+    -- Hero status
     screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height, hero.status)
     screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height/2, hero.life)
     -- Monsters status
@@ -178,6 +198,7 @@ ScrollMap.scroll(smap.FG_smap, smap.scroll.x, smap.scroll.y)
         break
     end
     end
+end
 
     -- Game information
     if #game.moblist > 0 then screen.print (SCREEN_UP, justify (35) , 8 , "Kill "..#game.moblist.." more to complete the Level")
@@ -185,15 +206,16 @@ ScrollMap.scroll(smap.FG_smap, smap.scroll.x, smap.scroll.y)
 
     
     -- DISPLAY SCREEN_DOWN
-	screen.print(SCREEN_DOWN,0,0,"Press Start to exit")
-	--screen.print(SCREEN_DOWN,0,8,"Press Start to exit")
-	screen.print (SCREEN_DOWN, 0, 8, "HRX: "..hero.realpos.x.." HRY: "..hero.realpos.y.." HSX: "..hero.scrpos.x.." HSY: "..hero.scrpos.y)
-    screen.print (SCREEN_DOWN, 0, 16, "Timer = "..game.clock:time()..".")
+    screen.print(SCREEN_DOWN,0,0,"Press Start to exit")
+    --screen.print(SCREEN_DOWN,0,8,"Press Start to exit")
+    -- screen.print (SCREEN_DOWN, 0, 8, "HRX: "..hero.realpos.x.." HRY: "..hero.realpos.y.." HSX: "..hero.scrpos.x.." HSY: "..hero.scrpos.y)
+    -- screen.print (SCREEN_DOWN, 0, 16, "Timer = "..game.clock:time()..".")
+    screen.print(SCREEN_DOWN, 0, 184, "FPS: "..NB_FPS)
     if (game.clock:time () > 30) then
-    game.skippedframes = game.skippedframes + 1
+    -- game.skippedframes = game.skippedframes + 1
 	screen.print(SCREEN_DOWN,0,24,"SKIPPED FRAMES")
     end
-	screen.print(SCREEN_DOWN,0,32,"SKIPPED FRAMES : "..game.skippedframes)
+	-- screen.print(SCREEN_DOWN,0,32,"SKIPPED FRAMES : "..game.skippedframes)
 
 
 	render()
@@ -204,5 +226,13 @@ end
 
 
 --game.status = "exit"
-end
 
+game.clock = nil
+game.itemlist = nil
+for k, v in pairs (game.mob_type_list) do
+    _G[v]:destroy()
+    end
+game.mob_type_list = nil
+
+
+end

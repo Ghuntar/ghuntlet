@@ -34,6 +34,7 @@ function MOB:displaycoords()
 	dcoord = self.realpos + hero.scrpos - hero.realpos
 	return dcoord
 end
+
 function MOB:display()
 self:set_spr_dir()
 self.scrpos = self:displaycoords()
@@ -41,7 +42,9 @@ self.scrpos = self:displaycoords()
 self.sprite:playAnimation(SCREEN_UP, self.scrpos.x, self.scrpos.y, self.spr_dir)
 end
 
-
+function MOB:destroy_display()
+self.sprite:destroy()
+end
 --####################################
 --#              Hero               #
 --##################################
