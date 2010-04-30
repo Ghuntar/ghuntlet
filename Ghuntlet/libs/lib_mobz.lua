@@ -17,6 +17,7 @@ MOB = {
 	newpos = COORD:new(),
 	move = COORD:new(),
 	dir = 3,
+    inmove = false,
 	status = "OK",
 	touch_attack = 0,
     -- d_attack = "Finger",
@@ -66,17 +67,18 @@ function MOB:changelifestatus ()
 	end
 
 function MOB:compute_move ()
-		local move = {}
-		move = COORD:new {0 , 0}
-		if self.dir == 1 then  move.x = 0            move.y = -self.speed end
-		if self.dir == 2 then  move.x = -self.speed  move.y = 0 end
-		if self.dir == 3 then  move.x = 0            move.y = self.speed end
-		if self.dir == 4 then  move.x = self.speed   move.y = 0 end
-		if self.dir == 5 then  move.x = self.diagspeed   move.y = -self.speed* 0.7 end
-		if self.dir == 6 then  move.x = -self.diagspeed  move.y = -self.diagspeed end
-		if self.dir == 7 then  move.x = -self.diagspeed  move.y = self.diagspeed end
-		if self.dir == 8 then  move.x = self.diagspeed   move.y = self.diagspeed end
-		return move
+		-- local move = {}
+		-- move = COORD:new {0 , 0}
+        if self.dir == 0 then   self.move.x = 0           self.move.y = 0 end
+		if self.dir == 1 then  self.move.x = 0            self.move.y = -self.speed end
+		if self.dir == 2 then  self.move.x = -self.speed  self.move.y = 0 end
+		if self.dir == 3 then  self.move.x = 0            self.move.y = self.speed end
+		if self.dir == 4 then  self.move.x = self.speed   self.move.y = 0 end
+		if self.dir == 5 then  self.move.x = self.diagspeed   self.move.y = -self.speed* 0.7 end
+		if self.dir == 6 then  self.move.x = -self.diagspeed  self.move.y = -self.diagspeed end
+		if self.dir == 7 then  self.move.x = -self.diagspeed  self.move.y = self.diagspeed end
+		if self.dir == 8 then  self.move.x = self.diagspeed   self.move.y = self.diagspeed end
+		-- return move
 		end
 
 function MOB:skirt ()
@@ -106,11 +108,18 @@ function MOB:collide_circle (other)
     end
 end
 
+function MOB:collide_tile (other)
+    if ((self.realpos:toMAPCOORD()) == (other.realpos:toMAPCOORD()))
+    then return true
+    else return false
+    end
+end
+
 function MOB:playturn (mobnumber)
     self:upkeep (mobnumber) -- To see if the mob is still alive 
     self:chooseanewdir()-- To choose a new direction and get a "newpos"
     -- Not yet implemented -- To see if the "newpos" trigger an event
-    self:makeamove () -- To see if the "newpos" is legal (not in a wall or pitt or something else) and execute the move
+    if self.inmove then self:makeamove () end-- To see if the "newpos" is legal (not in a wall or pitt or something else) and execute the move
     if self:chooseifattack() then 
         self:makeanattack() 
     end
@@ -133,6 +142,7 @@ function MOB:makeamove ()
         then self.realpos = self.newpos
         else self.realpos = self:skirt ()
     end
+    self.inmove = false
 end
 
 function MOB:collision()
@@ -153,6 +163,7 @@ end
 HEROS = MOB:new({name = "Hero", nickname = "Nemo", d_attack = "PENTACLE"})
 
 function HEROS:upkeep ()
+    -- self.life = self.maxlife
     self:changelifestatus ()
     if self.status == "Dead" then
     game.status = "gameover"
@@ -163,17 +174,41 @@ function HEROS:chooseanewdir()
     local newdir = get_dir()
     if newdir ~= 0 and newdir ~= nil then
         self.dir = newdir
-        self.move = self:compute_move()
+        self:compute_move()
+        self.inmove = true
     else self.move = {x = 0 , y = 0}
     end
     self.newpos = self.realpos + self.move
 end
 
+function HEROS:makeamove ()
+    for k,v in ipairs (smap.event_list) do
+    if self.newpos:toMAPCOORD() == v.coordm
+        then
+            screen.print (SCREEN_DOWN, 48, 16, "EVENT !")
+            if v.event_type == "door"
+                then
+                    door(v.coordm,self)
+                    table.remove (smap.event_list,k)
+                end
+            if v.event_type == "stairs" then stairs(v.level) end
+        end
+    end
+
+    if not is_in_table (self.newpos:whichtile(smap.BG_smap) , smap.BG_blocking_tiles)
+        then self.realpos = self.newpos
+        else self.realpos = self:skirt ()
+    end
+    self.inmove = false
+end
+
 function HEROS:collision()
     for k, v in ipairs (game.moblist) do
         if v.touch_attack ~= 0 then 
-            if self:collide_circle(v) then self.life = self.life - v.touch_attack end
-           -- if self:collide_square(v) then self.life = self.life - v.touch_attack end
+            if game.settings.collide == 0 then if self:collide_square(v) then self.life = self.life - v.touch_attack end 
+            elseif game.settings.collide == 1 then if self:collide_circle(v) then self.life = self.life - v.touch_attack end
+            elseif game.settings.collide == 2 then if self:collide_tile(v) then self.life = self.life - v.touch_attack end
+            end
         end
     end
 end
@@ -199,22 +234,29 @@ end
 MONSTER = MOB:new({name = "Monster"})
 
 function MONSTER:chooseanewdir ()
-    self.dir = self:ia_mov ()
-    self.move = self:compute_move ()
+    self:ia_mov ()
+    self:compute_move ()
     self.newpos = self.realpos + self.move
+    self.inmove = true
+
 end
 
 function MONSTER:ia_mov ()
-	local newdir = 0
-	if self.realpos.x < hero.realpos.x and self.realpos.y < hero.realpos.y then newdir = 8 end
-	if self.realpos.x > hero.realpos.x and self.realpos.y < hero.realpos.y then newdir = 7 end
-	if self.realpos.x < hero.realpos.x and self.realpos.y > hero.realpos.y then newdir = 5 end
-	if self.realpos.x > hero.realpos.x and self.realpos.y > hero.realpos.y then newdir = 6 end
-	return newdir
+	-- local newdir = 0
+    self.dir = 0
+	if self.realpos.x < hero.realpos.x and self.realpos.y < hero.realpos.y then self.dir = 8 end
+	if self.realpos.x > hero.realpos.x and self.realpos.y < hero.realpos.y then self.dir = 7 end
+	if self.realpos.x < hero.realpos.x and self.realpos.y > hero.realpos.y then self.dir = 5 end
+	if self.realpos.x > hero.realpos.x and self.realpos.y > hero.realpos.y then self.dir = 6 end
+    self.inmove = true
+	-- return newdir
 end
 
 function MONSTER:collision ()
-    if self:collide_circle(hero.attack) then self.life = self.life - hero.attack.touch_attack end
+    if  game.settings.collide == 0 then  if self:collide_square(hero.attack) then self.life = self.life - hero.attack.touch_attack end
+    elseif game.settings.collide == 1 then if self:collide_circle(hero.attack) then self.life = self.life - hero.attack.touch_attack end
+    elseif game.settings.collide == 2 then if self:collide_tile(hero.attack) then self.life = self.life - hero.attack.touch_attack end
+    end
 end
 --####################################
 --#              NPC                #
@@ -226,7 +268,7 @@ NPC = MOB:new()
 --#              Attack             #
 --##################################
 
-ATTACK = MOB:new({name = "Attack", age = 0, timer = Timer.new()})
+ATTACK = MOB:new({name = "Attack", timer = Timer.new()})
 
 function ATTACK:upkeep()
     if self.timer:time() > 500 then do
@@ -239,23 +281,21 @@ function ATTACK:upkeep()
 end
 
 function ATTACK:chooseanewdir ()
-    self.move = self:compute_move ()
+    self:compute_move ()
     self.newpos = self.realpos + self.move
-end
-
-function ATTACK:chooseanewdir ()
-    self.move = self:compute_move ()
-    self.newpos = self.realpos + self.move
-end
-
+    -- if not (self.newpos == self realpos) then 
+    self.inmove = true
+    -- end
+    end
 
 function ATTACK:makeamove ()
     if not is_in_table (self.newpos:whichtile(smap.BG_smap) , smap.BG_blocking_tiles)
-        then self.realpos = self.newpos
-        else self.realpos = {x=0,y=0} 
-        self.dir = 0
-        self.timer:stop()
-        self.timer:reset()
+    then    self.realpos = self.newpos
+    else    self.realpos = {x=0,y=0} 
+            self.newpos = {x=0,y=0}
+            self.dir = 0
+            self.timer:stop()
+            self.timer:reset()
     end
 end
 

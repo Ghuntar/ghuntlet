@@ -15,7 +15,7 @@ game = {}
 STATUS = {"select_game", "select_hero", "select_plan", "ingame", "pause" , "gameover", "exit"}
 game.status = "select_game"
 game.level = 0
-
+game.curentmap = "./plans/Base_Camp.plan.lua"
 
 while (game.status ~= "exit") do
 	if game.status == "select_game" then select_game () end

@@ -61,7 +61,8 @@ end
 --##############################################
 
 function select_plan()
-    game.curentmap = "./plans/Dungeon_01.plan.lua"
+    -- game.curentmap = "./plans/Dungeon_01.plan.lua"
+    if smap then ScrollMap.destroy(smap.BG_smap) end
     dofile (game.curentmap)
     game.status = "ingame"
 end

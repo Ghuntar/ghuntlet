@@ -38,10 +38,23 @@ function COORD.__sub(obj1,obj2)
 	return new
 end
 
+function COORD.__eq(obj1,obj2)
+    if (obj1.x == obj2.x) and (obj1.y == obj2.y)
+        then return true
+        else return false
+    end
+end
+
 function COORD:whichtile(tsmap)
 	local currenttilex = math.floor (self.x / smap.tile_width)
 	local currenttiley = math.floor (self.y / smap.tile_height)
 	return ScrollMap.getTile(tsmap, currenttilex, currenttiley)
+end
+
+function COORD:toMAPCOORD()
+	local currenttilex = math.floor (self.x / smap.tile_width)
+	local currenttiley = math.floor (self.y / smap.tile_height)
+    return COORD:new ({x = currenttilex, y =currenttiley})
 end
 
 --####################################
@@ -56,6 +69,24 @@ function is_in_table (value , array)
 	return false
 end
 
+--####################################
+--#              Events             #
+--##################################
+
+function door(coordm,mob)
+    screen.print (SCREEN_DOWN, 48, 24, "DOOR !")
+    -- for k,v in ipairs (mob.inventory) do
+    -- if v.name == "key" then ScrollMap.setTile(smap.BG_smap, current_tile_coord[1], current_tile_coord[2], smap.default_tile) table.remove (hero.inventory, k) end
+    -- end
+    ScrollMap.setTile(smap.BG_smap, coordm.x, coordm.y, smap.default_tile)
+end
+
+function stairs(level)
+    screen.print (SCREEN_DOWN, 8, 24, "STAIRS to : "..level)
+    game.curentmap = level
+    game.status = "select_plan"
+
+end
 
 --####################################
 --#              STATUS             #
@@ -70,15 +101,17 @@ function gameover ()
 		screen.print(SCREEN_DOWN, 75, 80,"Press Start to reset")
 		render()
 	end
-	game.status = "select_game"
+    game.curentmap = "./plans/Dungeon_01.plan.lua"
+	game.status = "select_plan"
 end
 
 function ingame()
 
 -- Initialisation
 
-game.display = {}
-game.display.floatingtext = true
+game.settings = {}
+game.settings.floatingtext = true
+game.settings.collide = 0
 
 --test pour génération de MOB --START--
 
@@ -137,14 +170,18 @@ if (Keys.newPress.A)
 then game.moblist[#game.moblist + 1] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
 end
 if (Keys.newPress.B)
-then table.remove (game.moblist, #game.moblist)
+    then table.remove (game.moblist, #game.moblist)
 end
 if (Keys.newPress.X)
     then
-        if game.display.floatingtext == true then game.display.floatingtext = false
-        else if game.display.floatingtext == false then game.display.floatingtext = true end
+        if game.settings.floatingtext == true then game.settings.floatingtext = false
+        else if game.settings.floatingtext == false then game.settings.floatingtext = true end
     end
 end
+if (Keys.newPress.Y)
+    then game.settings.collide = (game.settings.collide+1)%2
+end
+
 -- tests de génération de MOB --STOP--
 
 
@@ -185,7 +222,7 @@ ScrollMap.draw(SCREEN_UP, smap.FG_smap)
 ScrollMap.scroll(smap.FG_smap, smap.scroll.x, smap.scroll.y)
 
     --DISPLAY : HUD & Floating text
-if game.display.floatingtext then 
+if game.settings.floatingtext then 
     -- Hero status
     screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height, hero.status)
     screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height/2, hero.life)
@@ -210,6 +247,7 @@ end
     --screen.print(SCREEN_DOWN,0,8,"Press Start to exit")
     -- screen.print (SCREEN_DOWN, 0, 8, "HRX: "..hero.realpos.x.." HRY: "..hero.realpos.y.." HSX: "..hero.scrpos.x.." HSY: "..hero.scrpos.y)
     -- screen.print (SCREEN_DOWN, 0, 16, "Timer = "..game.clock:time()..".")
+    screen.print (SCREEN_DOWN, 0, 24, game.settings.collide)
     screen.print(SCREEN_DOWN, 0, 184, "FPS: "..NB_FPS)
     if (game.clock:time () > 30) then
     -- game.skippedframes = game.skippedframes + 1
