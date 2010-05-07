@@ -7,12 +7,12 @@ smap.tile_width  = 16
 smap.tile_height = 16
 
 -- Nombre de tuiles sur la carte
-smap.map_width = 6
-smap.map_height = 6
+smap.map_width = 16
+smap.map_height = 16
 
 -- Fichier Map
-smap.BG_map = "./maps/map_num_BG.map"
-smap.FG_map = "./maps/map_num_FG.map"
+smap.BG_map = "./maps/map_num_2_BG.map"
+smap.FG_map = "./maps/map_num_2_FG.map"
 
 -- Fichier Tileset
 smap.BG_Tileset = Image.load("./images/map_num.png", VRAM)

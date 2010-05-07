@@ -109,7 +109,7 @@ function MOB:collide_circle (other)
 end
 
 function MOB:collide_tile (other)
-    if ((self.realpos:toMAPCOORD()) == (other.realpos:toMAPCOORD()))
+    if ((self.realpos:REALtoMAP()) == (other.realpos:REALtoMAP()))
     then return true
     else return false
     end
@@ -183,7 +183,7 @@ end
 
 function HEROS:makeamove ()
     for k,v in ipairs (smap.event_list) do
-    if self.newpos:toMAPCOORD() == v.coordm
+    if self.newpos:REALtoMAP() == v.coordm
         then
             screen.print (SCREEN_DOWN, 48, 16, "EVENT !")
             if v.event_type == "door"
@@ -244,11 +244,16 @@ end
 function MONSTER:ia_mov ()
 	-- local newdir = 0
     self.dir = 0
-	if self.realpos.x < hero.realpos.x and self.realpos.y < hero.realpos.y then self.dir = 8 end
-	if self.realpos.x > hero.realpos.x and self.realpos.y < hero.realpos.y then self.dir = 7 end
-	if self.realpos.x < hero.realpos.x and self.realpos.y > hero.realpos.y then self.dir = 5 end
-	if self.realpos.x > hero.realpos.x and self.realpos.y > hero.realpos.y then self.dir = 6 end
-    self.inmove = true
+
+    if ((self.realpos.x - hero.realpos.x)^2 + (self.realpos.y - hero.realpos.y)^2) < 4096 then
+
+        if self.realpos.x < hero.realpos.x and self.realpos.y < hero.realpos.y then self.dir = 8 end
+        if self.realpos.x > hero.realpos.x and self.realpos.y < hero.realpos.y then self.dir = 7 end
+        if self.realpos.x < hero.realpos.x and self.realpos.y > hero.realpos.y then self.dir = 5 end
+        if self.realpos.x > hero.realpos.x and self.realpos.y > hero.realpos.y then self.dir = 6 end
+        self.inmove = true
+    else self.inmove = false
+    end
 	-- return newdir
 end
 
