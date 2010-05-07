@@ -38,6 +38,13 @@ function COORD.__sub(obj1,obj2)
 	return new
 end
 
+function COORD.__mul(obj1,mul)
+    local new = COORD:new()
+    new.x = obj1.x * mul
+    new.y = obj1.y * mul
+    return new
+end
+
 function COORD.__eq(obj1,obj2)
     if (obj1.x == obj2.x) and (obj1.y == obj2.y)
         then return true
@@ -46,15 +53,37 @@ function COORD.__eq(obj1,obj2)
 end
 
 function COORD:whichtile(tsmap)
-	local currenttilex = math.floor (self.x / smap.tile_width)
-	local currenttiley = math.floor (self.y / smap.tile_height)
-	return ScrollMap.getTile(tsmap, currenttilex, currenttiley)
+    local currenttilex = math.floor (self.x / smap.tile_width)
+    local currenttiley = math.floor (self.y / smap.tile_height)
+    return ScrollMap.getTile(tsmap, currenttilex, currenttiley)
 end
 
-function COORD:toMAPCOORD()
-	local currenttilex = math.floor (self.x / smap.tile_width)
-	local currenttiley = math.floor (self.y / smap.tile_height)
+-- function COORD:wichtile_M(tsmap)
+-- return ScrollMap.getTile(tsmap, self.x, self.y)
+-- end
+
+-- function COORD:toMAPCOORD()
+    -- local currenttilex = math.floor (self.x / smap.tile_width)
+    -- local currenttiley = math.floor (self.y / smap.tile_height)
+    -- return COORD:new ({x = currenttilex, y =currenttiley})
+-- end
+
+function COORD:REALtoMAP()
+    local currenttilex = math.floor (self.x / smap.tile_width)
+    local currenttiley = math.floor (self.y / smap.tile_height)
     return COORD:new ({x = currenttilex, y =currenttiley})
+end
+
+function COORD:MAPtoREAL()
+    local currenttilex = self.x * smap.tile_width
+    local currenttiley = self.y * smap.tile_height
+    return COORD:new ({x = currenttilex, y =currenttiley})
+end
+
+function COORD:align()
+    local new = COORD:new()
+    new = self:REALtoMAP() * smap.tile_width
+    return new
 end
 
 --####################################
@@ -88,6 +117,21 @@ function stairs(level)
 
 end
 
+function savegame()
+    save = {}
+    save.game = {}
+    save.game.hero = game.hero
+    save.hero = {}
+    save.hero.nickname = hero.nickname
+    save.hero.life = tostring (hero.life)
+    INI.save("./saves/"..hero.nickname..".sav",save)
+    print ("Save completed")
+end
+
+function loadgame()
+    -- To be implemented
+end
+
 --####################################
 --#              STATUS             #
 --##################################
@@ -101,8 +145,9 @@ function gameover ()
 		screen.print(SCREEN_DOWN, 75, 80,"Press Start to reset")
 		render()
 	end
-    game.curentmap = "./plans/Dungeon_01.plan.lua"
-	game.status = "select_plan"
+    game.hero = nil
+    game.curentmap = "Dungeon_01"
+	game.status = "select_game"
 end
 
 function ingame()
@@ -135,7 +180,7 @@ game.moblist = {}
 
 
 game.itemlist = {}
-game.level = smap.level
+-- game.level = smap.level
 game.clock = Timer.new()
 -- game.skippedframes = 0
 
@@ -159,8 +204,8 @@ hero.attack = _G[hero.d_attack]:new()
 while (game.status == "ingame" or game.status == "pause") do
     Controls.read()
     --UPKEEP : GAME STATUS
-    if (Keys.newPress.Start and (#game.moblist > 0)) then game.status = "exit" end
-    if (Keys.newPress.Start and (#game.moblist < 1)) then game.status = "exit" end
+    if (Keys.newPress.Start and (#game.moblist > 0)) then game.status = "pause" end
+    if (Keys.newPress.Start and (#game.moblist < 1)) then game.status = "pause" end
     if game.status == "pause" then pause () end
 
 game.clock:start()
@@ -249,10 +294,10 @@ end
     -- screen.print (SCREEN_DOWN, 0, 16, "Timer = "..game.clock:time()..".")
     screen.print (SCREEN_DOWN, 0, 24, game.settings.collide)
     screen.print(SCREEN_DOWN, 0, 184, "FPS: "..NB_FPS)
-    if (game.clock:time () > 30) then
+    -- if (game.clock:time () > 30) then
     -- game.skippedframes = game.skippedframes + 1
-	screen.print(SCREEN_DOWN,0,24,"SKIPPED FRAMES")
-    end
+	-- screen.print(SCREEN_DOWN,0,24,"SKIPPED FRAMES")
+    -- end
 	-- screen.print(SCREEN_DOWN,0,32,"SKIPPED FRAMES : "..game.skippedframes)
 
 
@@ -271,6 +316,9 @@ for k, v in pairs (game.mob_type_list) do
     _G[v]:destroy()
     end
 game.mob_type_list = nil
-
-
+if smap.BG_smap then ScrollMap.destroy(smap.BG_smap) end
+if smap.FG_smap then ScrollMap.destroy(smap.FG_smap) end
+if smap.BG_Tileset then Image.destroy(smap.BG_Tileset) end
+if smap.FG_Tileset then Image.destroy(smap.FG_Tileset) end
+smap = nil
 end

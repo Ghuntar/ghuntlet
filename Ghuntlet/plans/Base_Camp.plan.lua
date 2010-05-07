@@ -16,7 +16,7 @@ smap.FG_map = "./maps/Base_Camp_FG.map"
 
 -- Fichier Tileset
 smap.BG_Tileset = Image.load("./images/Ghuntlet_camp.png", VRAM)
--- smap.FG_tileset = smap.BG_Tileset -- On utilise le même fichier
+-- smap.FG_Tileset = smap.BG_Tileset -- On utilise le même fichier
 
 -- Init (Scroll)Map
 smap.BG_smap = ScrollMap.new(smap.BG_Tileset, smap.BG_map, smap.map_width, smap.map_height, smap.tile_width, smap.tile_height)
@@ -25,7 +25,6 @@ smap.BG_blocking_tiles = {129,3,4,5,61,76,77,78,91,92,93,94,95,107,108,109,110,1
 smap.default_tile = 132
 smap.maxrealx = smap.map_width * smap.tile_width
 smap.maxrealy = smap.map_height * smap.tile_height
--- game.level = 1
 smap.hero_startpos = COORD:new({x = 120 , y = 120})
 smap.scroll = COORD:new()
 smap.offset = COORD:new({x=-8,y=-8})

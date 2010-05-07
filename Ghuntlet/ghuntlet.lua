@@ -14,8 +14,8 @@ game = {}
 -- Différents game.status : select_game, select_plan, ingame, pause , gameover, exit
 STATUS = {"select_game", "select_hero", "select_plan", "ingame", "pause" , "gameover", "exit"}
 game.status = "select_game"
-game.level = 0
-game.curentmap = "./plans/Base_Camp.plan.lua"
+-- game.level = 0
+game.curentmap = "Base_Camp"
 
 while (game.status ~= "exit") do
 	if game.status == "select_game" then select_game () end
@@ -26,8 +26,9 @@ while (game.status ~= "exit") do
 	if not is_in_table (game.status, STATUS) then game.status = "exit" end
 end
 
-print (game.status)
-
+-- print (game.status)
+-- screen.print (SCRENN_UP,100,90,"Good Bye")
+-- render()
 -- Global variable destruction
 
 STATUS = nil
