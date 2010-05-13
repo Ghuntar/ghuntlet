@@ -1,1 +1,2 @@
+-- game.status = "gameover"
 gameover()

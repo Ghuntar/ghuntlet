@@ -104,10 +104,14 @@ end
 
 function door(coordm,mob)
     screen.print (SCREEN_DOWN, 48, 24, "DOOR !")
-    -- for k,v in ipairs (mob.inventory) do
-    -- if v.name == "key" then ScrollMap.setTile(smap.BG_smap, current_tile_coord[1], current_tile_coord[2], smap.default_tile) table.remove (hero.inventory, k) end
-    -- end
-    ScrollMap.setTile(smap.BG_smap, coordm.x, coordm.y, smap.default_tile)
+    for k,v in ipairs (mob.inventory) do
+    if v.name == "Key"
+    then
+        ScrollMap.setTile(smap.BG_smap, coordm.x, coordm.y, smap.default_tile)
+        table.remove (hero.inventory, k)
+        break
+    end
+    end
 end
 
 function stairs(level)
@@ -118,18 +122,26 @@ function stairs(level)
 end
 
 function savegame()
-    save = {}
+    local save = {}
     save.game = {}
     save.game.hero = game.hero
+    save.game.curentmap = game.curentmap
     save.hero = {}
     save.hero.nickname = hero.nickname
     save.hero.life = tostring (hero.life)
-    INI.save("./saves/"..hero.nickname..".sav",save)
+    INI.save ("./saves/"..hero.nickname..".sav",save)
     print ("Save completed")
 end
 
 function loadgame()
-    -- To be implemented
+    local load = {}
+    load = INI.load ("./saves/"..hero.nickname..".sav")
+    game.hero = load.game.hero
+    game.curentmap = load.game.curentmap
+    hero.nickname = load.hero.nickname
+    hero.life = tonumber (load.hero.life)
+    game.status = "select_plan"
+    print "Load completed"
 end
 
 --####################################
@@ -141,12 +153,12 @@ function gameover ()
 	while (not Keys.newPress.Start) do
 		Controls.read()
 		--screen.print(SCREEN_DOWN, 0, 32,"Game status : "..game.status)
-		screen.print(SCREEN_DOWN, 100, 40,"Game Over")
-		screen.print(SCREEN_DOWN, 75, 80,"Press Start to reset")
+		screen.print(SCREEN_DOWN, 100, 40,"Game Over",game.text_color)
+		screen.print(SCREEN_DOWN, 75, 80,"Press Start to reset",game.text_color)
 		render()
 	end
-    game.hero = nil
-    game.curentmap = "Dungeon_01"
+    -- game.hero = nil
+    -- game.curentmap = "Dungeon_01"
 	game.status = "select_game"
 end
 
@@ -157,32 +169,23 @@ function ingame()
 game.settings = {}
 game.settings.floatingtext = true
 game.settings.collide = 0
-
---test pour génération de MOB --START--
-
-game.mob_type_list = {"SKELETON","BLACKMAGE_LB"}
-for k, v in pairs (game.mob_type_list) do
-    dofile ("./datas/"..v..".lua")
-    dofile ("./datas/"..v..".ds.lua")
-    end
-
-game.moblist = {}
-
--- for i=1,100 do
-    -- game.moblist[i] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
-    -- end
--- for i =101,150 do
-    -- game.moblist[i] = BLACKMAGE_LB:new({name = "BlackMage",realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
-    -- end
---test pour génération de MOB --STOP--
-
-
-
-
-game.itemlist = {}
--- game.level = smap.level
 game.clock = Timer.new()
--- game.skippedframes = 0
+
+if not smap.mob_list
+then
+    smap.mob_list = {}
+end
+
+if not smap.item_list
+then
+    smap.item_list = {}
+end
+
+if not smap.event_list
+then
+    smap.event_list = {}
+end
+
 
 hero = _G[game.hero]:new()
 -- hero:init()
@@ -192,7 +195,6 @@ hero.realpos = smap.hero_startpos
 dofile ("./datas/".._G[game.hero].d_attack..".lua")
 dofile ("./datas/".._G[game.hero].d_attack..".ds.lua")
 hero.attack = _G[hero.d_attack]:new()
--- hero.attack = PENTACLE:new()
 
 
 --Controls.read()
@@ -204,27 +206,32 @@ hero.attack = _G[hero.d_attack]:new()
 while (game.status == "ingame" or game.status == "pause") do
     Controls.read()
     --UPKEEP : GAME STATUS
-    if (Keys.newPress.Start and (#game.moblist > 0)) then game.status = "pause" end
-    if (Keys.newPress.Start and (#game.moblist < 1)) then game.status = "pause" end
+    if (Keys.newPress.Start and (#smap.mob_list > 0)) then game.status = "pause" end
+    if (Keys.newPress.Start and (#smap.mob_list < 1)) then game.status = "pause" end
     if game.status == "pause" then pause () end
 
 game.clock:start()
 
 -- tests de génération de MOB --START--
-if (Keys.newPress.A)
-then game.moblist[#game.moblist + 1] = SKELETON:new({name = "Skeleton",realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
+if (Keys.newPress.A and smap.mob_type_list[1])
+then smap.mob_list[#smap.mob_list + 1] = _G[smap.mob_type_list[1]]:new({realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
 end
 if (Keys.newPress.B)
-    then table.remove (game.moblist, #game.moblist)
+    then table.remove (smap.mob_list, #smap.mob_list)
 end
 if (Keys.newPress.X)
+then
+    -- if game.settings.floatingtext == true then game.settings.floatingtext = false
+    -- else if game.settings.floatingtext == false then game.settings.floatingtext = true end
+    -- end
+    if hero.inventory[1]
     then
-        if game.settings.floatingtext == true then game.settings.floatingtext = false
-        else if game.settings.floatingtext == false then game.settings.floatingtext = true end
+        hero.inventory[#hero.inventory]:drop(hero)
+        table.remove(hero.inventory, #hero.inventory)
     end
 end
 if (Keys.newPress.Y)
-    then game.settings.collide = (game.settings.collide+1)%2
+    then game.settings.collide = (game.settings.collide+1)%3
 end
 
 -- tests de génération de MOB --STOP--
@@ -232,11 +239,20 @@ end
 
 hero:playturn()
 hero.attack:playturn()
-for k , v in ipairs (game.moblist) do
+for k , v in ipairs (smap.mob_list) do
     v:playturn(k)
     if (game.clock:time () > 30) then
         game.clock:stop ()
         break
+    end
+end
+
+for k , v in ipairs (smap.item_list) do
+    if v:collision()
+    then
+        table.remove (smap.item_list, k)
+        v:get(hero)
+        -- print (tostring(#smap.item_list))
     end
 end
 
@@ -246,10 +262,12 @@ ScrollMap.draw(SCREEN_UP, smap.BG_smap)
 ScrollMap.scroll(smap.BG_smap, smap.scroll.x, smap.scroll.y)
 
     --DISPLAY : Sprites
-    -- - Items & Drops
-    -- Not yet implemented
+    -- -Items & Drops
+    for k , v in ipairs (smap.item_list) do
+        v:display()
+    end
     -- -Monsters
-	for k , v in ipairs (game.moblist) do
+	for k , v in ipairs (smap.mob_list) do
 		v:display()
     if (game.clock:time () > 30) then
         game.clock:stop ()
@@ -272,7 +290,7 @@ if game.settings.floatingtext then
     screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height, hero.status)
     screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height/2, hero.life)
     -- Monsters status
-    for k, v in ipairs (game.moblist) do
+    for k, v in ipairs (smap.mob_list) do
         screen.print (SCREEN_UP, v.scrpos.x, v.scrpos.y - v.spr_height, v.status)
         screen.print (SCREEN_UP, v.scrpos.x, v.scrpos.y - v.spr_height/2, v.life)
     if (game.clock:time () > 30) then
@@ -283,16 +301,16 @@ if game.settings.floatingtext then
 end
 
     -- Game information
-    if #game.moblist > 0 then screen.print (SCREEN_UP, justify (35) , 8 , "Kill "..#game.moblist.." more to complete the Level")
+    if #smap.mob_list > 0 then screen.print (SCREEN_UP, justify (35) , 8 , "Kill "..#smap.mob_list.." more to complete the Level")
     else screen.print (SCREEN_UP, justify (30) , 8 , "Level completed : PRESS START") end
 
     
     -- DISPLAY SCREEN_DOWN
-    screen.print(SCREEN_DOWN,0,0,"Press Start to exit")
+    screen.print(SCREEN_DOWN,0,0,"Press Start to exit",game.text_color)
     --screen.print(SCREEN_DOWN,0,8,"Press Start to exit")
     -- screen.print (SCREEN_DOWN, 0, 8, "HRX: "..hero.realpos.x.." HRY: "..hero.realpos.y.." HSX: "..hero.scrpos.x.." HSY: "..hero.scrpos.y)
     -- screen.print (SCREEN_DOWN, 0, 16, "Timer = "..game.clock:time()..".")
-    screen.print (SCREEN_DOWN, 0, 24, game.settings.collide)
+    screen.print (SCREEN_DOWN, 0, 24, "Collision mode : "..game.settings.collide)
     screen.print(SCREEN_DOWN, 0, 184, "FPS: "..NB_FPS)
     -- if (game.clock:time () > 30) then
     -- game.skippedframes = game.skippedframes + 1
@@ -300,6 +318,11 @@ end
     -- end
 	-- screen.print(SCREEN_DOWN,0,32,"SKIPPED FRAMES : "..game.skippedframes)
 
+    for k,v in ipairs (hero.inventory) do
+        v.scrpos.x = 48 + 16*math.mod(k-1, 4)
+        v.scrpos.y = 48 + 16*math.floor((k-1)/4)
+        v:inventory_display()
+    end
 
 	render()
 game.clock:stop()
@@ -311,14 +334,17 @@ end
 --game.status = "exit"
 
 game.clock = nil
-game.itemlist = nil
-for k, v in pairs (game.mob_type_list) do
+-- game.itemlist = nil
+for k, v in pairs (smap.mob_type_list) do
     _G[v]:destroy()
     end
-game.mob_type_list = nil
-if smap.BG_smap then ScrollMap.destroy(smap.BG_smap) end
-if smap.FG_smap then ScrollMap.destroy(smap.FG_smap) end
-if smap.BG_Tileset then Image.destroy(smap.BG_Tileset) end
-if smap.FG_Tileset then Image.destroy(smap.FG_Tileset) end
-smap = nil
+smap.mob_type_list = nil
+smap.mob_list = nil
+smap.item_list = nil
+smap.event_list = nil
+if smap.BG_smap then ScrollMap.destroy(smap.BG_smap) smap.BG_smap = nil end
+if smap.FG_smap then ScrollMap.destroy(smap.FG_smap) smap.FG_smap = nil end
+if smap.BG_Tileset then Image.destroy(smap.BG_Tileset) smap.BG_Tileset = nil end
+if smap.FG_Tileset then Image.destroy(smap.FG_Tileset) smap.FG_Tileset = nil end
+smap = {}
 end
