@@ -29,19 +29,37 @@ smap.hero_startpos = COORD:new({x = 120 , y = 120})
 smap.scroll = COORD:new()
 smap.offset = COORD:new({x=-8,y=-8})
 
-smap.monster_list = {
-					{"BLACKMAGE_LB",{220 , 280}},
-					{"SKELETON",{250,250}},
-					{"BLACKMAGE_LB",{210 , 310}},
-					{"SKELETON",{240,240}},
-					{"Scarab",{270,140}},
-					}
-smap.item_list =	{
-					{"deadbody",{170,150}},
-					{"key",{150,170}},
-					{"doubleaxe",{250,200}},
-					{"doubleaxe",{200,250}},
-					}
+-- smap.monster_list = {
+                    -- {"BLACKMAGE_LB",{220 , 280}},
+                    -- {"SKELETON",{250,250}},
+                    -- {"BLACKMAGE_LB",{210 , 310}},
+                    -- {"SKELETON",{240,240}},
+                    -- {"Scarab",{270,140}},
+                    -- }
+                    
+-- Generating monsters :
+smap.mob_type_list = {"SKELETON","BLACKMAGE_LB"}
+for k,classname in ipairs (smap.mob_type_list) do
+    -- print (classname)
+    dofile ("./datas/"..classname..".lua")
+    dofile ("./datas/"..classname..".ds.lua")
+    end
+
+smap.mob_list =  {
+                BLACKMAGE_LB:new({realpos = COORD:new({x=220,y=280})}),
+                BLACKMAGE_LB:new({realpos = COORD:new({x=210,y=230})}),
+                SKELETON:new({realpos = COORD:new({x=250,y=250})}),
+                SKELETON:new({realpos = COORD:new({x=240,y=240})}),
+                -- SCARAB:new({realpos = COORD:new({x=270,y=140})}),
+                }
+smap.item_list =    {
+                    ITEM:new({realpos = COORD:new({x=170,y=150})}),
+                    KEY:new({realpos = COORD:new({x=150,y=170})}),
+                    -- {"deadbody",{170,150}},
+                    -- {"key",{150,170}},
+                    -- {"doubleaxe",{250,200}},
+                    -- {"doubleaxe",{200,250}},
+                    }
                     
 smap.event_list =   {
                     {coordm = COORD:new({x=16,y=14}),event_type = "door"},

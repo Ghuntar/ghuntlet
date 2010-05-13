@@ -29,10 +29,10 @@ smap.hero_startpos = COORD:new({x = 8 , y = 8})
 smap.scroll = COORD:new()
 smap.offset = COORD:new({x=-8,y=-8})
 
+smap.mob_type_list = {}
 smap.monster_list = {
                     }
 smap.item_list =	{
-					{"key",{16,40}},
 					}
 smap.event_list =   {
                     }

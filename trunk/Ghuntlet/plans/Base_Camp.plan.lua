@@ -29,6 +29,7 @@ smap.hero_startpos = COORD:new({x = 120 , y = 120})
 smap.scroll = COORD:new()
 smap.offset = COORD:new({x=-8,y=-8})
 
+smap.mob_type_list = {}
 smap.monster_list = {
 					{"BlackMage",{220 , 280}},
 					{"Skeleton",{250,250}},
@@ -37,10 +38,6 @@ smap.monster_list = {
 					{"Scarab",{270,140}},
 					}
 smap.item_list =	{
-					{"deadbody",{170,150}},
-					{"key",{150,170}},
-					{"doubleaxe",{250,200}},
-					{"doubleaxe",{200,250}},
 					}
 smap.event_list =   {
                     }

@@ -6,6 +6,8 @@ dofile ("./libs/lib_selectionz.lua")
 dofile ("./libs/lib_display_DS.lua")
 dofile ("./libs/lib_controls_DS.lua")
 
+txt_color = Color.new(25,20,0)
+
 game = {}
 game.status = "ingame"
 local conf = {}
@@ -175,14 +177,26 @@ end
 --dofile ("./plans/"..selectedfile)
 --System.changeDirectory("/media/DATAZ/LUA/ghuntlet/trunk/microluamapeditor")
 
--- dofile ("./plans/Base_Camp.plan.lua")
--- dofile ("./plans/Dungeon_01.plan.lua")
--- dofile ("./plans/Dungeon_02.plan.lua")
--- dofile ("./plans/Dungeon_03.plan.lua")
--- dofile ("./plans/Dungeon_04.plan.lua")
--- dofile ("./plans/map_num.plan.lua")
--- dofile ("./plans/map_num_2.plan.lua")
-dofile ("./plans/The_HUB.plan.lua")
+
+
+
+game.curentmap = select_in_list     (   "Choose the Map to EDIT",
+                                        {
+                                            {"Base_Camp","Base_Camp"},
+                                            {"Dungeon_01","Dungeon_01"},
+                                            {"Dungeon_02","Dungeon_02"},
+                                            {"Dungeon_03","Dungeon_03"},
+                                            {"Dungeon_04","Dungeon_04"},
+                                            {"map_num","map_num"},
+                                            {"map_num_2","map_num_2"},
+                                            {"The_HUB","The_HUB"}
+                                        },
+                                        12,
+                                        txt_color
+                                    )
+
+
+dofile ("./plans/"..game.curentmap..".plan.lua")
 
 -- Variables définies par le fichier de conf (.plan.lua)
     -- {
@@ -248,15 +262,17 @@ while (game.status ~= "exit") do
                                             {"Continue","ingame"},
                                             {"Save","save"},
                                             {"Exit","exit"}
-                                        } 
+                                        },
+                                        20,
+                                        txt_color
                                      )
         if game.status == "save"
         then
             while not (Keys.newPress.B) do
                 Controls.read()
                 local save = false
-                screen.print(SCREEN_DOWN, 28, 80, "Do You want to save ?")
-                screen.print(SCREEN_DOWN, 38, 100, "Press A to save, B to cancel")
+                screen.print(SCREEN_DOWN, 28, 80, "Do You want to save ?", txt_color)
+                screen.print(SCREEN_DOWN, 38, 100, "Press A to save, B to cancel", txt_color)
                 if Keys.newPress.A
                 then
                     savemap (smap.BG_smap,smap.BG_map)
@@ -272,9 +288,9 @@ while (game.status ~= "exit") do
     --  ################
     -- # Tileset Mode #
     --################    
-    if Keys.held.L
+    if Keys.held.L or Keys.held.L
     then
-        screen.print(SCREEN_UP, 56, 152,"Mode Tileset")
+        screen.print(SCREEN_UP, 56, 152,"Mode Tileset", txt_color)
         --lecture du stylet et déplacement du tileset
         if Stylus.deltaX
         then
@@ -316,7 +332,7 @@ while (game.status ~= "exit") do
         -- Controls.read()
         if Keys.newPress.Right
         then
-            conf.display_mode = (conf.display_mode + 1)%3
+            conf.display_mode = (conf.display_mode + 1)%4
         end
         -- screen.print(SCREEN_UP,0,100,conf.display_mode)
         if conf.display_mode == 0
@@ -324,18 +340,28 @@ while (game.status ~= "exit") do
             conf.display_BG = true
             conf.display_FG = false
             conf.edited_layer = smap.BG_smap
+            screen.print(SCREEN_UP, 30, 144, "Editing BackGround", txt_color)
         end
         if conf.display_mode == 1 
         then 
             conf.display_BG = true
             conf.display_FG = true
             conf.edited_layer = smap.BG_smap
+            screen.print(SCREEN_UP, 30, 144, "Editing BackGround", txt_color)
         end
         if conf.display_mode == 2
         then
             conf.display_BG = false
             conf.display_FG = true
             conf.edited_layer = smap.FG_smap
+            screen.print(SCREEN_UP, 30, 144, "Editing ForeGround", txt_color)
+        end
+        if conf.display_mode == 3
+        then
+            conf.display_BG = true
+            conf.display_FG = true
+            conf.edited_layer = smap.FG_smap
+            screen.print(SCREEN_UP, 30, 144, "Editing ForeGround", txt_color)
         end
 
         --Traitement du curseur
@@ -348,11 +374,12 @@ while (game.status ~= "exit") do
         smap.current_tile.coord = cursor.coord_M:REALtoMAP()
         smap.current_tile.number = ScrollMap.getTile(conf.edited_layer , smap.current_tile.coord.x , smap.current_tile.coord.y)
 
-        if Keys.held.Up then
+        if Keys.held.Up or Keys.held.X 
+        then 
     --  ###############
     -- #  Edit Mode  #
     --###############
-            screen.print(SCREEN_UP, 56, 152,"Mode Edition")
+            screen.print(SCREEN_UP, 56, 152,"Mode Edition", txt_color)
             if Stylus.held then
             ScrollMap.setTile (conf.edited_layer, smap.current_tile.coord.x, smap.current_tile.coord.y, tileset.current_tile.number)
             end
@@ -360,7 +387,7 @@ while (game.status ~= "exit") do
     --  ###############
     -- # Scroll Mode #
     --###############
-        screen.print(SCREEN_UP, 56, 152,"Mode Defilement")
+        screen.print(SCREEN_UP, 56, 152,"Mode Defilement", txt_color)
         --lecture du stylet et déplacement de la map
         if Stylus.deltaX
         then
@@ -392,24 +419,24 @@ while (game.status ~= "exit") do
         screen.blit (SCREEN_DOWN, cursor.coord_M.x - smap.offset.x, cursor.coord_M.y - smap.offset.y, cursor.sprite)
     end
 
-    screen.print(SCREEN_UP, 0, 0, "Stylus.deltaX : "..Stylus.deltaX)
-    screen.print(SCREEN_UP, 128, 0, "Stylus.deltaY : "..Stylus.deltaY)
-    screen.print(SCREEN_UP, 0, 8, "Stylus.X : "..Stylus.X)
-    screen.print(SCREEN_UP, 128, 8, "Stylus.Y : "..Stylus.Y)
-    screen.print(SCREEN_UP, 0, 16, "M.offset.x : "..smap.offset.x)
-    screen.print(SCREEN_UP, 128, 16, "M.offset.y : "..smap.offset.y)
-    screen.print(SCREEN_UP, 0, 24, "C.c_M.x : "..cursor.coord_M.x)
-    screen.print(SCREEN_UP, 128, 24, "C.c_M.y : "..cursor.coord_M.y)
-    screen.print(SCREEN_UP, 0, 32, "T.offset.x : "..tileset.offset.x)
-    screen.print(SCREEN_UP, 128, 32, "T.offset.y : "..tileset.offset.y)
-    screen.print(SCREEN_UP, 0, 40, "C.c_T.x : "..cursor.coord_T.x)
-    screen.print(SCREEN_UP, 128, 40, "C.c_T.y : "..cursor.coord_T.y)
-    screen.print(SCREEN_UP, 0, 48, "M.c_tile.x : "..smap.current_tile.coord.x)
-    screen.print(SCREEN_UP, 128, 48, "M.c_tile.y : "..smap.current_tile.coord.y)
-    screen.print(SCREEN_UP, 0, 56, "T.c_tile.x : "..tileset.current_tile.coord.x)
-    screen.print(SCREEN_UP, 128, 56, "T.c_tile.y : "..tileset.current_tile.coord.y)
-    screen.print(SCREEN_UP, 0, 64, "M.c_tile.num : "..smap.current_tile.number)
-    screen.print(SCREEN_UP, 128, 64, "T.c_tile.num : "..tileset.current_tile.number)
+    screen.print(SCREEN_UP, 0, 0, "Stylus.deltaX : "..Stylus.deltaX, txt_color)
+    screen.print(SCREEN_UP, 128, 0, "Stylus.deltaY : "..Stylus.deltaY, txt_color)
+    screen.print(SCREEN_UP, 0, 8, "Stylus.X : "..Stylus.X, txt_color)
+    screen.print(SCREEN_UP, 128, 8, "Stylus.Y : "..Stylus.Y, txt_color)
+    screen.print(SCREEN_UP, 0, 16, "M.offset.x : "..smap.offset.x, txt_color)
+    screen.print(SCREEN_UP, 128, 16, "M.offset.y : "..smap.offset.y, txt_color)
+    screen.print(SCREEN_UP, 0, 24, "C.c_M.x : "..cursor.coord_M.x, txt_color)
+    screen.print(SCREEN_UP, 128, 24, "C.c_M.y : "..cursor.coord_M.y, txt_color)
+    screen.print(SCREEN_UP, 0, 32, "T.offset.x : "..tileset.offset.x, txt_color)
+    screen.print(SCREEN_UP, 128, 32, "T.offset.y : "..tileset.offset.y, txt_color)
+    screen.print(SCREEN_UP, 0, 40, "C.c_T.x : "..cursor.coord_T.x, txt_color)
+    screen.print(SCREEN_UP, 128, 40, "C.c_T.y : "..cursor.coord_T.y, txt_color)
+    screen.print(SCREEN_UP, 0, 48, "M.c_tile.x : "..smap.current_tile.coord.x, txt_color)
+    screen.print(SCREEN_UP, 128, 48, "M.c_tile.y : "..smap.current_tile.coord.y, txt_color)
+    screen.print(SCREEN_UP, 0, 56, "T.c_tile.x : "..tileset.current_tile.coord.x, txt_color)
+    screen.print(SCREEN_UP, 128, 56, "T.c_tile.y : "..tileset.current_tile.coord.y, txt_color)
+    screen.print(SCREEN_UP, 0, 64, "M.c_tile.num : "..smap.current_tile.number, txt_color)
+    screen.print(SCREEN_UP, 128, 64, "T.c_tile.num : "..tileset.current_tile.number, txt_color)
     -- screen.blit (SCREEN_UP, 40, 72, smap.BG_Tileset, smap.current_tile.coord.x * smap.tile_width, smap.current_tile.coord.y * smap.tile_height, smap.tile_width, smap.tile_height)
 
     screen.blit (SCREEN_UP, 40, 72, smap.BG_Tileset, smap.tile_width * math.mod (smap.current_tile.number , tileset.width / smap.tile_width), smap.tile_height * math.floor (smap.current_tile.number / (tileset.width / smap.tile_width)), smap.tile_width, smap.tile_height)
@@ -428,13 +455,13 @@ while (game.status ~= "exit") do
 
     -- screen.print(SCREEN_UP, 0, 72, tile_type.x)
     -- screen.print(SCREEN_UP, 32, 72, tile_type.y)
-    screen.print(SCREEN_UP, 0, 144, conf.display_mode)
+    screen.print(SCREEN_UP, 0, 144, conf.display_mode, txt_color)
     -- screen.print(SCREEN_UP, 128, 144,tostring(conf.edited_layer))
-    screen.print(SCREEN_UP, 0, 160, "Press L to swap to choose your TILE")
-    screen.print(SCREEN_UP, 0, 168, "Press UP and the Stylet to DRAW a TILE")
-    screen.print(SCREEN_UP, 0, 176, "Press START to QUIT")
-    screen.print(SCREEN_UP, 0, 184, "Press B to do NOTHING ;)")
-    screen.print(SCREEN_UP, 0, 192, "OUT OF RANGE")
+    screen.print(SCREEN_UP, 0, 160, "Press L to swap to choose your TILE", txt_color)
+    screen.print(SCREEN_UP, 0, 168, "Press UP and the Stylet to DRAW a TILE", txt_color)
+    screen.print(SCREEN_UP, 0, 176, "Press START to QUIT", txt_color)
+    screen.print(SCREEN_UP, 0, 184, "Press B to do NOTHING ;)", txt_color)
+    screen.print(SCREEN_UP, 0, 192, "OUT OF RANGE", txt_color)
 
 
 

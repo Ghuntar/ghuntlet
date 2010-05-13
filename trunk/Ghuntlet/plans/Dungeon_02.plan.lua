@@ -29,19 +29,27 @@ smap.hero_startpos = COORD:new({x = 120 , y = 120})
 smap.scroll = COORD:new()
 smap.offset = COORD:new({x=-8,y=-8})
 
+smap.mob_type_list = {"SKELETON","BLACKMAGE_LB","SCARAB","PORTAL"}
+for k,classname in ipairs (smap.mob_type_list) do
+    -- print (classname)
+    dofile ("./datas/"..classname..".lua")
+    dofile ("./datas/"..classname..".ds.lua")
+    end
+
+smap.mob_list =  {
+                -- BLACKMAGE_LB:new({realpos = COORD:new({x=220,y=280})}),
+                -- BLACKMAGE_LB:new({realpos = COORD:new({x=210,y=230})}),
+                -- SKELETON:new({realpos = COORD:new({x=250,y=250})}),
+                -- SKELETON:new({realpos = COORD:new({x=240,y=240})}),
+                SCARAB:new({realpos = COORD:new({x=270,y=140})}),
+                PORTAL:new({realpos = COORD:new({x=270,y=140})}),
+                }
 smap.monster_list = {
-					{"Portal",{200 , 200}},
---[[					{"Ratmut",{200 , 200}},
-					{"BlackMage",{220 , 280}},
-					{"Skeleton",{250,250}},
-					{"Ratmut",{210 , 280}},
-					{"BlackMage",{210 , 310}},
-					{"Skeleton",{240,240}},
-					{"Scarab",{270,140}},
-]]					}
+                    {"Portal",{200 , 200}},
+                    }
 smap.item_list =	{
-					{"key",{150,140}},
-					}
+                    KEY:new({realpos = COORD:new({x=150,y=140})}),
+                    }
 smap.event_list =   {
                     {coordm = COORD:new({x=34,y=31}),event_type = "door"},
                     {coordm = COORD:new({x=42,y=41}),event_type = "stairs", level = "GAMEOVER"},

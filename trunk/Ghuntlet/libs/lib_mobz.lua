@@ -7,6 +7,7 @@
 -- MOBz are all Mobile OBjects, including Heroes, Monsters, Weapons, and more
 
 MOB = {
+    class = "MOB",
 	name = "Unnamed",
 	race = "Unknown",
 	speed = 2,
@@ -118,7 +119,6 @@ end
 function MOB:playturn (mobnumber)
     self:upkeep (mobnumber) -- To see if the mob is still alive 
     self:chooseanewdir()-- To choose a new direction and get a "newpos"
-    -- Not yet implemented -- To see if the "newpos" trigger an event
     if self.inmove then self:makeamove () end-- To see if the "newpos" is legal (not in a wall or pitt or something else) and execute the move
     if self:chooseifattack() then 
         self:makeanattack() 
@@ -130,7 +130,7 @@ function MOB:upkeep (mobnumber)
     self:changelifestatus ()
     if self.status == "Dead" then
     self = nil
-    table.remove (game.moblist, mobnumber)
+    table.remove (smap.mob_list, mobnumber)
     end
 end
     
@@ -160,7 +160,7 @@ end
 --#              Heros              #
 --##################################
 
-HEROS = MOB:new({name = "Hero", nickname = "Nemo", d_attack = "PENTACLE"})
+HEROS = MOB:new({class = "HEROS", name = "Hero", nickname = "Nemo", d_attack = "PENTACLE",inventory = {}})
 
 function HEROS:upkeep ()
     -- self.life = self.maxlife
@@ -203,7 +203,7 @@ function HEROS:makeamove ()
 end
 
 function HEROS:collision()
-    for k, v in ipairs (game.moblist) do
+    for k, v in ipairs (smap.mob_list) do
         if v.touch_attack ~= 0 then 
             if game.settings.collide == 0 then if self:collide_square(v) then self.life = self.life - v.touch_attack end 
             elseif game.settings.collide == 1 then if self:collide_circle(v) then self.life = self.life - v.touch_attack end
@@ -231,7 +231,7 @@ end
 --#              Monster            #
 --##################################
 
-MONSTER = MOB:new({name = "Monster"})
+MONSTER = MOB:new({class = "MONSTER", name = "Monster",inventory = {}})
 
 function MONSTER:chooseanewdir ()
     self:ia_mov ()
@@ -245,7 +245,7 @@ function MONSTER:ia_mov ()
 	-- local newdir = 0
     self.dir = 0
 
-    if ((self.realpos.x - hero.realpos.x)^2 + (self.realpos.y - hero.realpos.y)^2) < 4096 then
+    if ((self.realpos.x - hero.realpos.x)^2 + (self.realpos.y - hero.realpos.y)^2) < 16384 then
 
         if self.realpos.x < hero.realpos.x and self.realpos.y < hero.realpos.y then self.dir = 8 end
         if self.realpos.x > hero.realpos.x and self.realpos.y < hero.realpos.y then self.dir = 7 end
@@ -273,11 +273,11 @@ NPC = MOB:new()
 --#              Attack             #
 --##################################
 
-ATTACK = MOB:new({name = "Attack", timer = Timer.new()})
+ATTACK = MOB:new({class = "ATTACK", name = "Attack", timer = Timer.new(), dir = 0})
 
 function ATTACK:upkeep()
     if self.timer:time() > 500 then do
-        self.realpos = {x = -0,y = -0}
+        self.realpos = {x = 0,y = 0}
         self.dir = 0
         self.timer:stop()
         self.timer:reset()
@@ -288,9 +288,12 @@ end
 function ATTACK:chooseanewdir ()
     self:compute_move ()
     self.newpos = self.realpos + self.move
-    -- if not (self.newpos == self realpos) then 
-    self.inmove = true
-    -- end
+    if self.dir ~= 0
+    then 
+        self.inmove = true
+    else 
+        self.inmove = false
+    end
     end
 
 function ATTACK:makeamove ()
@@ -308,5 +311,27 @@ end
 --#              Item               #
 --##################################
 
-ITEM = MOB:new({name = "Item"})
+ITEM = MOB:new({class = "ITEM", name = "Item"})
 
+function ITEM:get(owner)
+    self.realpos = {x=0,y=0}
+    if #owner.inventory > 15
+    then
+        owner.inventory[1]:drop(owner)
+        table.remove (owner.inventory, 1)
+    end
+    table.insert (owner.inventory , self)
+end
+
+function ITEM:drop(owner)
+    self.realpos = owner.realpos + {x=math.random(-1,1)*16,y=math.random(-1,1)*16}
+    table.insert (smap.item_list, self)
+end
+
+function ITEM:collision()
+    if  game.settings.collide == 0 then  if self:collide_square(hero) then return true end
+    elseif game.settings.collide == 1 then if self:collide_circle(hero) then return true end
+    elseif game.settings.collide == 2 then if self:collide_tile(hero) then return true end
+    else return false
+    end
+end

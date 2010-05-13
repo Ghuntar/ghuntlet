@@ -21,7 +21,7 @@ smap.BG_Tileset = Image.load("./images/Ghuntlet_Dungeon_02.png", VRAM)
 -- Init (Scroll)Map
 smap.BG_smap = ScrollMap.new(smap.BG_Tileset, smap.BG_map, smap.map_width, smap.map_height, smap.tile_width, smap.tile_height)
 smap.FG_smap = ScrollMap.new(smap.BG_Tileset, smap.FG_map, smap.map_width, smap.map_height, smap.tile_width, smap.tile_height)
-smap.BG_blocking_tiles = {}
+smap.BG_blocking_tiles = {150,198,199,200,258,434,435,}
 smap.default_tile = 17
 smap.maxrealx = smap.map_width * smap.tile_width
 smap.maxrealy = smap.map_height * smap.tile_height
@@ -29,6 +29,7 @@ smap.hero_startpos = COORD:new({x = 120 , y = 120})
 smap.scroll = COORD:new()
 smap.offset = COORD:new({x=-8,y=-8})
 
+smap.mob_type_list = {}
 smap.monster_list = {
                     -- {"Ratmut",{200 , 200}},
                     -- {"BlackMage",{220 , 280}},
@@ -38,10 +39,19 @@ smap.monster_list = {
                     -- {"Skeleton",{240,240}},
                     -- {"Scarab",{270,140}},
                     }
-smap.item_list =	{
-					{"key",{150,140}},
-					}
+smap.item_list =    {
+                    -- ITEM:new({realpos = COORD:new({x=170,y=150})}),
+                    -- KEY:new({realpos = COORD:new({x=150,y=170})}),
+                    }
 smap.event_list =   {
+                    {coordm = COORD:new({x=7,y=9}),event_type = "stairs", level = "Base_Camp"},
+                    {coordm = COORD:new({x=9,y=9}),event_type = "stairs", level = "Dungeon_01"},
+                    {coordm = COORD:new({x=11,y=9}),event_type = "stairs", level = "Dungeon_02"},
+                    {coordm = COORD:new({x=13,y=9}),event_type = "stairs", level = "Dungeon_03"},
+                    {coordm = COORD:new({x=7,y=11}),event_type = "stairs", level = "Dungeon_04"},
+                    {coordm = COORD:new({x=9,y=11}),event_type = "stairs", level = "map_num_2"},
+                    {coordm = COORD:new({x=11,y=11}),event_type = "stairs", level = "map_num"},
+                    {coordm = COORD:new({x=13,y=11}),event_type = "stairs", level = "Gameover"},
                     }
 smap.NPC_list = {
                 }

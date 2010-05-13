@@ -29,6 +29,7 @@ smap.hero_startpos = COORD:new({x = 120 , y = 120})
 smap.scroll = COORD:new()
 smap.offset = COORD:new({x=-8,y=-8})
 
+smap.mob_type_list = {}
 smap.monster_list = {
 --[[					{"Ratmut",{200 , 200}},
 					{"BlackMage",{220 , 280}},
@@ -38,8 +39,27 @@ smap.monster_list = {
 					{"Skeleton",{240,240}},
 					{"Scarab",{270,140}},
 ]]					}
-smap.item_list =	{
-					{"key",{150,140}},
-					}
+smap.item_list =    {
+                    KEY:new({realpos = COORD:new({x=150,y=170})}),
+                    KEY:new({realpos = COORD:new({x=150,y=190})}),
+                    KEY:new({realpos = COORD:new({x=150,y=210})}),
+                    ITEM:new({realpos = COORD:new({x=150,y=230})}),
+                    ITEM:new({realpos = COORD:new({x=170,y=170})}),
+                    ITEM:new({realpos = COORD:new({x=170,y=190})}),
+                    ITEM:new({realpos = COORD:new({x=170,y=210})}),
+                    KEY:new({realpos = COORD:new({x=170,y=230})}),
+                    KEY:new({realpos = COORD:new({x=190,y=170})}),
+                    ITEM:new({realpos = COORD:new({x=190,y=190})}),
+                    ITEM:new({realpos = COORD:new({x=190,y=210})}),
+                    ITEM:new({realpos = COORD:new({x=190,y=230})}),
+                    KEY:new({realpos = COORD:new({x=210,y=170})}),
+                    KEY:new({realpos = COORD:new({x=210,y=190})}),
+                    ITEM:new({realpos = COORD:new({x=210,y=210})}),
+                    ITEM:new({realpos = COORD:new({x=210,y=230})}),
+                    KEY:new({realpos = COORD:new({x=230,y=170})}),
+                    KEY:new({realpos = COORD:new({x=230,y=190})}),
+                    ITEM:new({realpos = COORD:new({x=230,y=210})}),
+                    ITEM:new({realpos = COORD:new({x=230,y=230})}),
+                    }
 smap.event_list =   {
                     }
