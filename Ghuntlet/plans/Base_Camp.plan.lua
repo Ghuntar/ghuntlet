@@ -29,15 +29,20 @@ smap.hero_startpos = COORD:new({x = 120 , y = 120})
 smap.scroll = COORD:new()
 smap.offset = COORD:new({x=-8,y=-8})
 
-smap.mob_type_list = {}
-smap.monster_list = {
-					{"BlackMage",{220 , 280}},
-					{"Skeleton",{250,250}},
-					{"BlackMage",{210 , 310}},
-					{"Skeleton",{240,240}},
-					{"Scarab",{270,140}},
-					}
+smap.mob_type_list =    {
+                        }
+
+for k,classname in ipairs (smap.mob_type_list) do
+    -- print (classname)
+    dofile ("./datas/"..classname..".lua")
+    dofile ("./datas/"..classname..".ds.lua")
+end
+
+smap.mob_list =     {
+                    }
+
 smap.item_list =	{
 					}
+
 smap.event_list =   {
                     }

@@ -118,7 +118,7 @@ end
 
 function MOB:playturn (mobnumber)
     self:upkeep (mobnumber) -- To see if the mob is still alive 
-    self:chooseanewdir()-- To choose a new direction and get a "newpos"
+    self:chooseanewdir()-- To choose a new direction, a move then get a "newpos"
     if self.inmove then self:makeamove () end-- To see if the "newpos" is legal (not in a wall or pitt or something else) and execute the move
     if self:chooseifattack() then 
         self:makeanattack() 
@@ -183,15 +183,21 @@ end
 
 function HEROS:makeamove ()
     for k,v in ipairs (smap.event_list) do
-    if self.newpos:REALtoMAP() == v.coordm
+        if self.newpos:REALtoMAP() == v.coordm
         then
-            screen.print (SCREEN_DOWN, 48, 16, "EVENT !")
+            -- screen.print (SCREEN_DOWN, 48, 16, "EVENT !")
+            Debug.print("EVENT !")
             if v.event_type == "door"
+            then
+                if door(v.coordm,self)
                 then
-                    door(v.coordm,self)
                     table.remove (smap.event_list,k)
                 end
-            if v.event_type == "stairs" then stairs(v.level) end
+            end
+            if v.event_type == "stairs"
+            then
+                stairs(v.level)
+            end
         end
     end
 
@@ -223,6 +229,18 @@ function HEROS:makeanattack()
     if self.attack.timer:time() == 0 then
         self.attack.realpos = self.realpos
         self.attack.dir = self.dir
+        self.attack.owner = self
+        if self.attack.angle
+        then
+            if self.dir == 1 then self.attack.angle = math.pi*1.5 end
+            if self.dir == 2 then self.attack.angle = math.pi end
+            if self.dir == 3 then self.attack.angle = math.pi*0.5 end
+            if self.dir == 4 then self.attack.angle = 0 end
+            if self.dir == 5 then self.attack.angle = math.pi*1.75 end
+            if self.dir == 6 then self.attack.angle = math.pi*1.25 end
+            if self.dir == 7 then self.attack.angle = math.pi*0.75 end
+            if self.dir == 8 then self.attack.angle = math.pi*0.25 end
+        end
         self.attack.timer:start()
     end
 end
@@ -273,11 +291,11 @@ NPC = MOB:new()
 --#              Attack             #
 --##################################
 
-ATTACK = MOB:new({class = "ATTACK", name = "Attack", timer = Timer.new(), dir = 0})
+ATTACK = MOB:new({class = "ATTACK", name = "Attack", timer = Timer.new(), dir = 0, owner = nil, TTL = 500})
 
 function ATTACK:upkeep()
-    if self.timer:time() > 500 then do
-        self.realpos = {x = 0,y = 0}
+    if self.timer:time() > self.TTL then do
+        self.realpos = COORD:new({x = 0,y = 0})
         self.dir = 0
         self.timer:stop()
         self.timer:reset()
@@ -302,6 +320,7 @@ function ATTACK:makeamove ()
     else    self.realpos = {x=0,y=0} 
             self.newpos = {x=0,y=0}
             self.dir = 0
+            if self.angle then self.angle = 0 end
             self.timer:stop()
             self.timer:reset()
     end
