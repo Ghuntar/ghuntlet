@@ -92,10 +92,18 @@ end
 
 -- This function test if value "value" is in a table "array"
 function is_in_table (value , array)
-	for k, v in pairs (array) do
-		if value == v then return true end
-	end
-	return false
+    -- if value == nil
+    -- then
+        -- return false
+    -- else
+        for k, v in pairs (array) do
+            if value == v
+            then
+                return true
+            end
+        end
+        return false
+    -- end
 end
 
 --####################################
@@ -103,19 +111,24 @@ end
 --##################################
 
 function door(coordm,mob)
-    screen.print (SCREEN_DOWN, 48, 24, "DOOR !")
+    -- screen.print (SCREEN_DOWN, 48, 24, "DOOR !")
+    local doorstate = false
+    Debug.print ("DOOR !")
     for k,v in ipairs (mob.inventory) do
-    if v.name == "Key"
-    then
-        ScrollMap.setTile(smap.BG_smap, coordm.x, coordm.y, smap.default_tile)
-        table.remove (hero.inventory, k)
-        break
+        if v.name == "Key"
+        then
+            ScrollMap.setTile(smap.BG_smap, coordm.x, coordm.y, smap.default_tile)
+            table.remove (hero.inventory, k)
+            doorstate = true
+            break
+        end
     end
-    end
+    return doorstate
 end
 
 function stairs(level)
-    screen.print (SCREEN_DOWN, 8, 24, "STAIRS to : "..level)
+    -- screen.print (SCREEN_DOWN, 8, 24, "STAIRS to : "..level)
+    Debug.print ("STAIRS to : "..level)
     game.curentmap = level
     game.status = "select_plan"
 
@@ -168,6 +181,7 @@ function ingame()
 
 game.settings = {}
 game.settings.floatingtext = true
+game.settings.displaymobz = true
 game.settings.collide = 0
 game.clock = Timer.new()
 
@@ -194,7 +208,7 @@ hero.scrpos.y = 98
 hero.realpos = smap.hero_startpos
 dofile ("./datas/".._G[game.hero].d_attack..".lua")
 dofile ("./datas/".._G[game.hero].d_attack..".ds.lua")
-hero.attack = _G[hero.d_attack]:new()
+hero.attack = _G[hero.d_attack]:new({owner = hero})
 
 
 --Controls.read()
@@ -221,17 +235,20 @@ if (Keys.newPress.B)
 end
 if (Keys.newPress.X)
 then
-    -- if game.settings.floatingtext == true then game.settings.floatingtext = false
-    -- else if game.settings.floatingtext == false then game.settings.floatingtext = true end
-    -- end
+    game.settings.displaymobz = not game.settings.displaymobz
+    game.settings.floatingtext = not game.settings.floatingtext
+end
+if (Keys.newPress.Y)
+    then game.settings.collide = (game.settings.collide+1)%3
+end
+
+if Stylus.newPress
+then
     if hero.inventory[1]
     then
         hero.inventory[#hero.inventory]:drop(hero)
         table.remove(hero.inventory, #hero.inventory)
     end
-end
-if (Keys.newPress.Y)
-    then game.settings.collide = (game.settings.collide+1)%3
 end
 
 -- tests de génération de MOB --STOP--
@@ -267,14 +284,13 @@ ScrollMap.scroll(smap.BG_smap, smap.scroll.x, smap.scroll.y)
         v:display()
     end
     -- -Monsters
-	for k , v in ipairs (smap.mob_list) do
-		v:display()
-    if (game.clock:time () > 30) then
-        game.clock:stop ()
-        break
+    if game.settings.displaymobz
+    then
+        for k , v in ipairs (smap.mob_list) do
+            v:display()
+        end
     end
-	end
-    -- -Hero
+        -- -Hero
     hero:display()
     hero.attack:display()
     -- -Attacks
@@ -287,31 +303,28 @@ ScrollMap.scroll(smap.FG_smap, smap.scroll.x, smap.scroll.y)
     --DISPLAY : HUD & Floating text
 if game.settings.floatingtext then 
     -- Hero status
-    screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height, hero.status)
-    screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height/2, hero.life)
+    screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height, hero.status, game.c_bone)
+    screen.print (SCREEN_UP, hero.scrpos.x, hero.scrpos.y - hero.spr_height/2, hero.life, game.c_bone)
     -- Monsters status
     for k, v in ipairs (smap.mob_list) do
-        screen.print (SCREEN_UP, v.scrpos.x, v.scrpos.y - v.spr_height, v.status)
-        screen.print (SCREEN_UP, v.scrpos.x, v.scrpos.y - v.spr_height/2, v.life)
-    if (game.clock:time () > 30) then
-        game.clock:stop ()
-        break
-    end
+        screen.print (SCREEN_UP, v.scrpos.x, v.scrpos.y - v.spr_height, v.status, game.c_snot)
+        screen.print (SCREEN_UP, v.scrpos.x, v.scrpos.y - v.spr_height/2, v.life, game.c_snot)
     end
 end
 
     -- Game information
-    if #smap.mob_list > 0 then screen.print (SCREEN_UP, justify (35) , 8 , "Kill "..#smap.mob_list.." more to complete the Level")
-    else screen.print (SCREEN_UP, justify (30) , 8 , "Level completed : PRESS START") end
+    if #smap.mob_list > 0 then screen.print (SCREEN_UP, justify (35) , 8 , "Kill "..#smap.mob_list.." more to clean the Level", game.c_blood)
+    else screen.print (SCREEN_UP, justify (35) , 8 , "Level cleaned : Go to the stairs !" ,game.c_snot) end
 
     
     -- DISPLAY SCREEN_DOWN
-    screen.print(SCREEN_DOWN,0,0,"Press Start to exit",game.text_color)
+    screen.print(SCREEN_UP,0,184,"Press Start to PAUSE",game.c_marine)
     --screen.print(SCREEN_DOWN,0,8,"Press Start to exit")
     -- screen.print (SCREEN_DOWN, 0, 8, "HRX: "..hero.realpos.x.." HRY: "..hero.realpos.y.." HSX: "..hero.scrpos.x.." HSY: "..hero.scrpos.y)
     -- screen.print (SCREEN_DOWN, 0, 16, "Timer = "..game.clock:time()..".")
-    screen.print (SCREEN_DOWN, 0, 24, "Collision mode : "..game.settings.collide)
-    screen.print(SCREEN_DOWN, 0, 184, "FPS: "..NB_FPS)
+    -- screen.print (SCREEN_DOWN, 0, 24, "Collision mode : "..game.settings.collide)
+    Debug.print("Collision mode : "..game.settings.collide)
+    screen.print(SCREEN_DOWN, 0, 184, "FPS: "..NB_FPS,game.c_blood)
     -- if (game.clock:time () > 30) then
     -- game.skippedframes = game.skippedframes + 1
 	-- screen.print(SCREEN_DOWN,0,24,"SKIPPED FRAMES")
@@ -325,6 +338,7 @@ end
     end
 
 	render()
+    Debug.clear()
 game.clock:stop()
 game.clock:reset()
 
