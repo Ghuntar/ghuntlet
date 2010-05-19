@@ -116,6 +116,10 @@ function MOB:collide_tile (other)
     end
 end
 
+function MOB:collide_null (other)
+    return false
+end
+
 function MOB:playturn (mobnumber)
     self:upkeep (mobnumber) -- To see if the mob is still alive 
     self:chooseanewdir()-- To choose a new direction, a move then get a "newpos"
@@ -211,9 +215,10 @@ end
 function HEROS:collision()
     for k, v in ipairs (smap.mob_list) do
         if v.touch_attack ~= 0 then 
-            if game.settings.collide == 0 then if self:collide_square(v) then self.life = self.life - v.touch_attack end 
-            elseif game.settings.collide == 1 then if self:collide_circle(v) then self.life = self.life - v.touch_attack end
-            elseif game.settings.collide == 2 then if self:collide_tile(v) then self.life = self.life - v.touch_attack end
+            if      game.settings.collide == 0 then if self:collide_square (v)  then self.life = self.life - v.touch_attack end 
+            elseif  game.settings.collide == 1 then if self:collide_circle (v)  then self.life = self.life - v.touch_attack end
+            elseif  game.settings.collide == 2 then if self:collide_tile (v)    then self.life = self.life - v.touch_attack end
+            elseif  game.settings.collide == 3 then if self:collide_null (v)    then self.life = self.life - v.touch_attack end
             end
         end
     end
@@ -255,7 +260,7 @@ function MONSTER:chooseanewdir ()
     self:ia_mov ()
     self:compute_move ()
     self.newpos = self.realpos + self.move
-    self.inmove = true
+    -- self.inmove = true
 
 end
 
@@ -276,9 +281,10 @@ function MONSTER:ia_mov ()
 end
 
 function MONSTER:collision ()
-    if  game.settings.collide == 0 then  if self:collide_square(hero.attack) then self.life = self.life - hero.attack.touch_attack end
-    elseif game.settings.collide == 1 then if self:collide_circle(hero.attack) then self.life = self.life - hero.attack.touch_attack end
-    elseif game.settings.collide == 2 then if self:collide_tile(hero.attack) then self.life = self.life - hero.attack.touch_attack end
+    if  game.settings.collide == 0 then  if self:collide_square (hero.attack) then self.life = self.life - hero.attack.touch_attack end
+    elseif game.settings.collide == 1 then if self:collide_circle (hero.attack) then self.life = self.life - hero.attack.touch_attack end
+    elseif game.settings.collide == 2 then if self:collide_tile (hero.attack) then self.life = self.life - hero.attack.touch_attack end
+    elseif game.settings.collide == 3 then if self:collide_null (hero.attack) then self.life = self.life - hero.attack.touch_attack end
     end
 end
 --####################################
@@ -317,8 +323,8 @@ function ATTACK:chooseanewdir ()
 function ATTACK:makeamove ()
     if not is_in_table (self.newpos:whichtile(smap.BG_smap) , smap.BG_blocking_tiles)
     then    self.realpos = self.newpos
-    else    self.realpos = {x=0,y=0} 
-            self.newpos = {x=0,y=0}
+    else    self.realpos = COORD:new({x = 0,y = 0}) 
+            self.newpos = COORD:new({x = 0,y = 0})
             self.dir = 0
             if self.angle then self.angle = 0 end
             self.timer:stop()
@@ -333,7 +339,7 @@ end
 ITEM = MOB:new({class = "ITEM", name = "Item"})
 
 function ITEM:get(owner)
-    self.realpos = {x=0,y=0}
+    self.realpos = COORD:new({x=0,y=0})
     if #owner.inventory > 15
     then
         owner.inventory[1]:drop(owner)
@@ -348,9 +354,10 @@ function ITEM:drop(owner)
 end
 
 function ITEM:collision()
-    if  game.settings.collide == 0 then  if self:collide_square(hero) then return true end
-    elseif game.settings.collide == 1 then if self:collide_circle(hero) then return true end
-    elseif game.settings.collide == 2 then if self:collide_tile(hero) then return true end
+    if  game.settings.collide == 0 then  if self:collide_square (hero) then return true end
+    elseif game.settings.collide == 1 then if self:collide_circle (hero) then return true end
+    elseif game.settings.collide == 2 then if self:collide_tile (hero) then return true end
+    elseif game.settings.collide == 3 then if self:collide_null (hero) then return true end
     else return false
     end
 end

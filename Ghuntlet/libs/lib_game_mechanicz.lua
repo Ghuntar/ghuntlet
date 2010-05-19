@@ -58,20 +58,10 @@ function COORD:whichtile(tsmap)
     return ScrollMap.getTile(tsmap, currenttilex, currenttiley)
 end
 
--- function COORD:wichtile_M(tsmap)
--- return ScrollMap.getTile(tsmap, self.x, self.y)
--- end
-
--- function COORD:toMAPCOORD()
-    -- local currenttilex = math.floor (self.x / smap.tile_width)
-    -- local currenttiley = math.floor (self.y / smap.tile_height)
-    -- return COORD:new ({x = currenttilex, y =currenttiley})
--- end
-
 function COORD:REALtoMAP()
     local currenttilex = math.floor (self.x / smap.tile_width)
     local currenttiley = math.floor (self.y / smap.tile_height)
-    return COORD:new ({x = currenttilex, y =currenttiley})
+    return COORD:new ({x = currenttilex, y = currenttiley})
 end
 
 function COORD:MAPtoREAL()
@@ -92,18 +82,13 @@ end
 
 -- This function test if value "value" is in a table "array"
 function is_in_table (value , array)
-    -- if value == nil
-    -- then
-        -- return false
-    -- else
-        for k, v in pairs (array) do
-            if value == v
-            then
-                return true
-            end
+    for k, v in pairs (array) do
+        if value == v
+        then
+            return true
         end
-        return false
-    -- end
+    end
+    return false
 end
 
 --####################################
@@ -170,8 +155,6 @@ function gameover ()
 		screen.print(SCREEN_DOWN, 75, 80,"Press Start to reset",game.text_color)
 		render()
 	end
-    -- game.hero = nil
-    -- game.curentmap = "Dungeon_01"
 	game.status = "select_game"
 end
 
@@ -202,9 +185,7 @@ end
 
 
 hero = _G[game.hero]:new()
--- hero:init()
-hero.scrpos.x = 120
-hero.scrpos.y = 98
+hero.scrpos = COORD:new({x=120,y=98})
 hero.realpos = smap.hero_startpos
 dofile ("./datas/".._G[game.hero].d_attack..".lua")
 dofile ("./datas/".._G[game.hero].d_attack..".ds.lua")
@@ -218,28 +199,37 @@ hero.attack = _G[hero.d_attack]:new({owner = hero})
 ---------------
 
 while (game.status == "ingame" or game.status == "pause") do
-    Controls.read()
-    --UPKEEP : GAME STATUS
-    if (Keys.newPress.Start and (#smap.mob_list > 0)) then game.status = "pause" end
-    if (Keys.newPress.Start and (#smap.mob_list < 1)) then game.status = "pause" end
-    if game.status == "pause" then pause () end
-
+-- Read control state
+Controls.read()
+-- Start the timer for this turn
 game.clock:start()
 
--- tests de génération de MOB --START--
+-- Controls definition :
+if (Keys.newPress.Start)
+then
+    game.status = "pause"
+    pause ()
+end
+
 if (Keys.newPress.A and smap.mob_type_list[1])
-then smap.mob_list[#smap.mob_list + 1] = _G[smap.mob_type_list[1]]:new({realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
+then
+    smap.mob_list[#smap.mob_list + 1] = _G[smap.mob_type_list[1]]:new({realpos = COORD:new({x=math.random(112,332),y=math.random(120,332)})})
 end
+
 if (Keys.newPress.B)
-    then table.remove (smap.mob_list, #smap.mob_list)
+then
+    table.remove (smap.mob_list, #smap.mob_list)
 end
+
 if (Keys.newPress.X)
 then
     game.settings.displaymobz = not game.settings.displaymobz
     game.settings.floatingtext = not game.settings.floatingtext
 end
+
 if (Keys.newPress.Y)
-    then game.settings.collide = (game.settings.collide+1)%3
+then
+    game.settings.collide = (game.settings.collide+1)%4
 end
 
 if Stylus.newPress
@@ -251,27 +241,33 @@ then
     end
 end
 
--- tests de génération de MOB --STOP--
-
-
+-- Play the Hero turn
 hero:playturn()
 hero.attack:playturn()
+
+-- Play the Monsters turn
 for k , v in ipairs (smap.mob_list) do
     v:playturn(k)
-    if (game.clock:time () > 30) then
-        game.clock:stop ()
+    if (game.clock:time () > 30)
+    then
         break
     end
 end
 
+-- Check for Item takeover
 for k , v in ipairs (smap.item_list) do
     if v:collision()
     then
         table.remove (smap.item_list, k)
         v:get(hero)
-        -- print (tostring(#smap.item_list))
+    end
+    if (game.clock:time () > 30)
+    then
+        break
     end
 end
+
+-- :: Display ::
 
     --DISPLAY : Background MAP
 smap.scroll = hero.realpos - hero.scrpos + smap.offset
@@ -319,17 +315,10 @@ end
     
     -- DISPLAY SCREEN_DOWN
     screen.print(SCREEN_UP,0,184,"Press Start to PAUSE",game.c_marine)
-    --screen.print(SCREEN_DOWN,0,8,"Press Start to exit")
-    -- screen.print (SCREEN_DOWN, 0, 8, "HRX: "..hero.realpos.x.." HRY: "..hero.realpos.y.." HSX: "..hero.scrpos.x.." HSY: "..hero.scrpos.y)
-    -- screen.print (SCREEN_DOWN, 0, 16, "Timer = "..game.clock:time()..".")
-    -- screen.print (SCREEN_DOWN, 0, 24, "Collision mode : "..game.settings.collide)
     Debug.print("Collision mode : "..game.settings.collide)
+    Debug.print("Hero X : "..hero.realpos.x)
+    Debug.print("Hero Y : "..hero.realpos.y)
     screen.print(SCREEN_DOWN, 0, 184, "FPS: "..NB_FPS,game.c_blood)
-    -- if (game.clock:time () > 30) then
-    -- game.skippedframes = game.skippedframes + 1
-	-- screen.print(SCREEN_DOWN,0,24,"SKIPPED FRAMES")
-    -- end
-	-- screen.print(SCREEN_DOWN,0,32,"SKIPPED FRAMES : "..game.skippedframes)
 
     for k,v in ipairs (hero.inventory) do
         v.scrpos.x = 48 + 16*math.mod(k-1, 4)
@@ -348,7 +337,6 @@ end
 --game.status = "exit"
 
 game.clock = nil
--- game.itemlist = nil
 for k, v in pairs (smap.mob_type_list) do
     _G[v]:destroy()
     end
