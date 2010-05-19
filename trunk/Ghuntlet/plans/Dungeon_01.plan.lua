@@ -54,13 +54,13 @@ smap.mob_list =     {
                     BLACKMAGE_LB:new({realpos = COORD:new({x=220,y=280})}),
                     BLACKMAGE_LB:new({realpos = COORD:new({x=210,y=230})}),
                     SKELETON:new({realpos = COORD:new({x=250,y=250})}),
-                    SKELETON:new({realpos = COORD:new({x=240,y=240})}),
+                    SKELETON:new({realpos = COORD:new({x=256,y=256})}),
                     SCARAB:new({realpos = COORD:new({x=270,y=140})}),
                     }
 
 smap.item_list =    {
                     ITEM:new({realpos = COORD:new({x=170,y=150})}),
-                    KEY:new({realpos = COORD:new({x=150,y=170})}),
+                    KEY:new({realpos = COORD:new({x=150,y=150})}),
                     -- {"deadbody",{170,150}},
                     -- {"key",{150,170}},
                     -- {"doubleaxe",{250,200}},

@@ -33,14 +33,6 @@ function select_in_list (...)
             screen.print(SCREEN_DOWN, 60, 20+i*espacement, select_list[i][1], couleur)
         end
         screen.print(SCREEN_DOWN, 30 ,20+(selection + 1)*espacement, "=>", couleur)
-        -- if game.hero 
-        -- then
-            -- screen.print(SCREEN_UP, 30, 80, game.hero, couleur)
-        -- end
-        -- if game.curentmap 
-        -- then
-            -- screen.print(SCREEN_DOWN, 30, 160, "Map : "..game.curentmap, couleur)
-        -- end
         screen.blit (SCREEN_UP,80,90,Title_Screen)
         render()
     end

@@ -21,7 +21,7 @@ game.c_snot = Color.new (0,31,0)
 game.c_blood = Color.new (31,0,0)
 game.c_marine = Color.new (0,0,31)
 
--- Debug.ON()
+Debug.ON()
 
 while (game.status ~= "exit") do
 	if game.status == "select_game" then select_game () end
@@ -35,6 +35,6 @@ end
 Debug.OFF()
 -- Global variable destruction
 
--- STATUS = nil
+STATUS = nil
 game = nil
 
